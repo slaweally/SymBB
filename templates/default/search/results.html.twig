@@ -1,0 +1,55 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Arama Sonuclari — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo; 
+        <a href="{{ path('app_search') }}">Arama</a> &raquo; Sonuclar
+    </div>
+
+    <div class="results-container">
+        <div class="results-header">
+            <h1>"{{ keywords }}" icin Sonuclar</h1>
+            <div class="results-meta">Bulunan mesaj: {{ total_results|default(posts|length) }}</div>
+        </div>
+
+        {% if posts is empty %}
+            <div class="results-empty">
+                Aradiginiz kelimeye uygun hicbir sonuc bulunamadi.
+                <br><br>
+                <a href="{{ path('app_search') }}" class="btn-link">Yeniden Arama Yap</a>
+            </div>
+        {% else %}
+            {% for post in posts %}
+                <div class="result-item">
+                    <div class="result-title">
+                        <a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}#post-{{ post.pid }}">
+                            {{ post.thread.subject }}
+                        </a>
+                    </div>
+                    <div class="result-snippet">
+                        {{ post.message|striptags|slice(0, 150) }}{{ post.message|length > 150 ? '...' : '' }}
+                    </div>
+                    <div class="result-footer">
+                        <span>Gönderen: <strong>{{ post.username }}</strong></span>
+                        <span>Tarih: {{ post.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+            {% if total_pages|default(1) > 1 and sid|default('') %}
+            <div class="pagination-wrap">
+                {% for p in 1..total_pages %}
+                    {% if p == page|default(1) %}
+                        <span class="pagination-current">{{ p }}</span>
+                    {% else %}
+                        <a href="{{ path('app_search', {action: 'results', sid: sid, page: p}) }}">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

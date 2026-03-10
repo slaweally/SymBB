@@ -1,0 +1,78 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}{{ forum.name }} — SymBB{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo; {{ forum.name }}
+{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <table class="tborder" style="width: 100%; margin-bottom: 15px;">
+        <tr>
+            <td class="tfoot">
+                {% if pagination is not empty %}{{ knp_pagination_render(pagination) }}{% endif %}
+            </td>
+            <td class="tfoot" style="text-align: right;">
+                {% if app.user %}
+                <a href="{{ path('app_misc', {action: 'markread'}) }}" class="button" title="Forumu Okundu İşaretle"><i class="fa-solid fa-check"></i></a>
+                <a href="{{ path('app_thread_new', {fid: forum.fid}) }}" class="button"><i class="fa-solid fa-pencil"></i> Yeni Konu</a>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <form method="post" action="{{ path('app_inlinemod') }}" id="inlinemod-threads">
+        <input type="hidden" name="_token" value="{{ csrf_token('inlinemod') }}">
+        <input type="hidden" name="type" value="threads">
+        <table class="tborder" style="width: 100%;">
+            <thead>
+                <tr>
+                    <td class="thead"><strong>Konu — Yazar</strong></td>
+                    <td class="thead" style="width: 80px; text-align: center;"><strong>Yanıt</strong></td>
+                    <td class="thead" style="width: 25%;"><strong>Son Mesaj</strong></td>
+                </tr>
+            </thead>
+            <tbody>
+                {% if pagination is empty %}
+                <tr>
+                    <td class="trow1" colspan="3" style="text-align: center; padding: 40px;">Bu forumda henüz konu yok.</td>
+                </tr>
+                {% else %}
+                {% for thread in pagination %}
+                {% set row_class = loop.index is odd ? 'trow1' : 'trow2' %}
+                <tr>
+                    <td class="{{ row_class }}">
+                        {% if is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN') %}
+                        <input type="checkbox" name="items[]" value="{{ thread.tid }}" class="form-check-input" style="margin-right: 6px;">
+                        {% endif %}
+                        <a href="{{ path('app_thread_show', {tid: thread.tid}) }}" class="{{ thread.closed ? 'subject' : 'subject_new' }}">{{ thread.subject }}</a>
+                        {% if thread.stickied %}<span class="forumdisplay_sticky"></span>{% endif %}
+                        <br><span class="smalltext">tarafından {% if thread.uid > 0 %}<a href="{{ path('app_member', {'action': 'profile', 'uid': thread.uid}) }}" class="links">{{ thread.username }}</a>{% else %}{{ thread.username ?: 'Misafir' }}{% endif %}</span>
+                    </td>
+                    <td class="{{ row_class }}" style="text-align: center;">{{ thread.replies|number_format(0, ',', '.') }}</td>
+                    <td class="{{ row_class }}">
+                        {% set lp_date = (thread.lastpost ?: thread.dateline) %}
+                        <a href="{{ path('app_thread_show', {tid: thread.tid}) }}#lastpost" class="links">{{ lp_date|date('d.m.Y H:i', 'Europe/Istanbul') }}</a><br>
+                        <span class="smalltext">tarafından {% if thread.uid > 0 %}<a href="{{ path('app_member', {'action': 'profile', 'uid': thread.uid}) }}" class="links">{{ thread.username }}</a>{% else %}{{ thread.username ?: 'Misafir' }}{% endif %}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN') %}
+                <tr>
+                    <td class="tfoot" colspan="3">
+                        <button type="submit" name="action" value="delete" class="button" onclick="return confirm('Seçili konuları silmek istediğinize emin misiniz?');">Seçilenleri Sil</button>
+                        <button type="submit" name="action" value="lock" class="button">Kilitle</button>
+                        <button type="submit" name="action" value="unlock" class="button">Aç</button>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endif %}
+            </tbody>
+        </table>
+    </form>
+    {% if pagination is not empty %}
+    <div class="mt-3">{{ knp_pagination_render(pagination) }}</div>
+    {% endif %}
+{% endblock %}

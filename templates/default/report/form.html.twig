@@ -1,0 +1,31 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Mesaj Raporla — SymBB{% endblock %}
+
+{% block body %}
+    <div style="max-width: 500px; margin: 40px auto;">
+        <h1>Mesaj Raporla</h1>
+
+        {% if already_reported %}
+            <p style="color:#c62828;">Bu mesaji zaten rapor ettiniz.</p>
+            <p><a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}">Konuya don</a></p>
+        {% else %}
+            <p>Konu: <a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}">{{ post.thread.subject }}</a></p>
+            <p>Raporlanacak mesaj: {{ post.subject|default('(basliksiz)') }}</p>
+
+            <form method="post" action="{{ path('app_report') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('report_content') }}">
+                <input type="hidden" name="action" value="report">
+                <input type="hidden" name="pid" value="{{ post.pid }}">
+
+                <div style="margin-bottom: 16px;">
+                    <label for="reason">Rapor sebebi:</label>
+                    <textarea id="reason" name="reason" rows="4" style="width:100%; padding:8px;" placeholder="Neden rapor ediyorsunuz?"></textarea>
+                </div>
+
+                <button type="submit">Raporu Gonder</button>
+                <a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}" style="margin-left:12px;">Iptal</a>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Anket Duzenle — {{ thread.subject }}{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px; margin: 0 auto;">
+        <h1>Anket Duzenle</h1>
+        <p>Konu: <a href="{{ path('app_thread_show', {tid: thread.tid}) }}">{{ thread.subject }}</a></p>
+
+        <form method="post" action="{{ path('app_polls', {action: 'do_editpoll'}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('poll_editpoll') }}">
+            <input type="hidden" name="pid" value="{{ poll.pid }}">
+
+            <div style="margin-bottom: 16px;">
+                <label for="question">Soru:</label>
+                <input type="text" id="question" name="question" value="{{ poll.question }}" required style="width:100%; padding:8px;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label for="options">Secenekler (virgülle ayirin):</label>
+                <input type="text" id="options" name="options" value="{{ poll.optionsArray|join(', ') }}" placeholder="Secenek 1, Secenek 2, Secenek 3" required style="width:100%; padding:8px;">
+            </div>
+
+            <button type="submit">Anketi Guncelle</button>
+            <a href="{{ path('app_thread_show', {tid: thread.tid}) }}" style="margin-left:12px;">Iptal</a>
+        </form>
+    </div>
+{% endblock %}

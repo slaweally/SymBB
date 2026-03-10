@@ -1,0 +1,47 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Konuyu Taşı — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_thread_show', {tid: thread.tid}) }}">{{ thread.subject }}</a> &raquo; Konuyu Taşı
+    </div>
+
+    <div class="moderation-move">
+        <h1>Konuyu Taşı</h1>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert-flash-error">{{ message }}</div>
+        {% endfor %}
+
+        <div class="thread-info">
+            <strong>Konu:</strong> {{ thread.subject }}
+        </div>
+
+        <form method="post" action="{{ path('app_moderation', {action: 'movethread', tid: thread.tid}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('move_thread_' ~ thread.tid) }}">
+
+            <div class="form-group">
+                <label for="fid">Hedef Forum</label>
+                <select id="fid" name="fid" class="form-control" required>
+                    <option value="">-- Forum seçin --</option>
+                    {% for cat in forum_data.categories %}
+                        <optgroup label="{{ cat.name }}">
+                            {% for forum in cat.forums %}
+                                <option value="{{ forum.fid }}" {{ forum.fid == current_fid ? 'disabled' : '' }}>
+                                    {{ forum.name }}{% if forum.fid == current_fid %} (mevcut){% endif %}
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="move-btn">Taşı</button>
+            <a href="{{ path('app_thread_show', {tid: thread.tid}) }}" class="move-cancel">İptal</a>
+        </form>
+    </div>
+{% endblock %}

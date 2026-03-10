@@ -1,0 +1,77 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Yeni Mesaj Gonder — Ozel Mesajlar — SymBB{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_private_message') }}">Ozel Mesajlar</a> &raquo;
+            Mesaj Gonder
+        </div>
+    </div>
+
+    <div class="pm-container">
+        <div class="pm-menu">
+            <h3>Mesajlar</h3>
+            <ul>
+                <li><a href="{{ path('app_private_message') }}">Gelen Kutusu</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'send'}) }}" class="active">Yeni Mesaj Gonder</a></li>
+            </ul>
+        </div>
+        <div class="pm-content">
+            <h1>Yeni Mesaj Gonder</h1>
+
+            {% if error %}
+                <div class="form-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="post" id="pm-form" action="{{ path('app_private_message', {action: 'send'}) }}" onsubmit="return syncEditor()">
+                <div class="form-group">
+                    <label for="to_username">Alici Kullanici Adi</label>
+                    <input type="text" id="to_username" name="to_username" value="{{ app.request.query.get('to', '') }}" required autofocus autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Konu Basligi</label>
+                    <input type="text" id="subject" name="subject" value="{{ app.request.query.get('subject', '') }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Mesajiniz</label>
+                    <div id="editor"></div>
+                    <input type="hidden" name="message" id="hidden_message">
+                </div>
+                
+                <button type="submit" class="btn-primary">Mesaji Gonder</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script>
+        let editor;
+        document.addEventListener('DOMContentLoaded', function() {
+            editor = new toastui.Editor({
+                el: document.querySelector('#editor'),
+                height: '300px',
+                initialEditType: 'wysiwyg',
+                previewStyle: 'vertical',
+                initialValue: ''
+            });
+        });
+
+        function syncEditor() {
+            if (editor) {
+                document.getElementById('hidden_message').value = editor.getHTML();
+            }
+            return true;
+        }
+    </script>
+{% endblock %}

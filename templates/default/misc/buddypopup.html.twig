@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Arkadaş Listesi — SymBB</title>
+    <link rel="stylesheet" href="{{ asset('themes/default/css/global.css') }}">
+</head>
+<body class="tborder">
+<table class="tborder" style="width: 100%;">
+    <thead>
+        <tr>
+            <td class="thead"><strong>Arkadaş Listesi</strong></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% if not has_buddies %}
+        <tr>
+            <td class="trow1"><em>Arkadaş listeniz boş.</em></td>
+        </tr>
+        {% else %}
+        {% if buddies_online is not empty %}
+        <tr>
+            <td class="tcat">Çevrimiçi</td>
+        </tr>
+        {% for b in buddies_online %}
+        <tr>
+            <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                <a href="{{ path('app_member', {action: 'profile', uid: b.uid}) }}" target="_blank">{{ b.username }}</a>
+                <a href="{{ path('app_private_message', {action: 'send', uid: b.uid}) }}" class="ms-2 small">ÖM Gönder</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+        {% if buddies_offline is not empty %}
+        <tr>
+            <td class="tcat">Çevrimdışı</td>
+        </tr>
+        {% for b in buddies_offline %}
+        <tr>
+            <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                <a href="{{ path('app_member', {action: 'profile', uid: b.uid}) }}" target="_blank">{{ b.username }}</a>
+                {% if b.receivepms %}
+                <a href="{{ path('app_private_message', {action: 'send', uid: b.uid}) }}" class="ms-2 small">ÖM Gönder</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+    </tbody>
+</table>
+</body>
+</html>

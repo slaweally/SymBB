@@ -1,0 +1,56 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Uye Listesi — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="member-header">
+        <h1>Üye Listesi</h1>
+        <p>Kayıtlı üyelerimiz, mesaj sayısına göre sıralı</p>
+        <p><a href="{{ path('app_memberlist', {action: 'search'}) }}">Gelişmiş Arama</a></p>
+    </div>
+
+    {% if pagination is empty %}
+        <div class="empty-list">Henuz kayitli uye yok.</div>
+    {% else %}
+        <table class="member-table">
+            <thead>
+                <tr>
+                    <th>Avatar</th>
+                    <th>Kullanici Adi</th>
+                    <th>Kayit Tarihi</th>
+                    <th>Mesaj Sayisi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in pagination %}
+                    <tr>
+                        <td>
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar starts with 'http' ? user.avatar : asset(user.avatar) }}" alt="{{ user.username }}" class="member-avatar">
+                            {% else %}
+                                <div class="member-avatar-placeholder">{{ user.username|slice(0, 1)|upper }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="member-name">
+                            <a href="{{ path('app_member', {'action': 'profile', 'uid': user.uid}) }}">{{ user|format_name }}</a>
+                        </td>
+                        <td class="member-date">
+                            {% if user.regdate > 0 %}
+                                {{ user.regdate|date('d.m.Y H:i', 'Europe/Istanbul') }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td class="member-posts">{{ user.postnum|number_format(0, ',', '.') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="memberlist-actions">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Imza Duzenle — Kontrol Paneli — SymBB{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+            Imzami Duzenle
+        </div>
+    </div>
+
+    <div class="cp-container">
+        <div class="cp-menu">
+            <h3>Profil</h3>
+            <ul>
+                <li><a href="{{ path('app_usercp') }}">Genel Bakis</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'profile'}) }}">Profil Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'editsig'}) }}" class="active">Imza Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'options'}) }}">Secenekleri Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'subscriptions'}) }}">Konu Abonelikleri</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'drafts'}) }}">Taslaklar</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'password'}) }}">Sifre Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'email'}) }}">E-posta Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'avatar'}) }}">Avatar Yukle</a></li>
+            </ul>
+        </div>
+        <div class="cp-content">
+            <h1>Imzami Duzenle</h1>
+
+            <form method="post" id="sig-form" onsubmit="return syncEditor()">
+                <div id="editor"></div>
+                <input type="hidden" name="signature" id="hidden_signature">
+                <button type="submit" class="btn-primary">Imzayi Kaydet</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script>
+        let editor;
+        document.addEventListener('DOMContentLoaded', function() {
+            editor = new toastui.Editor({
+                el: document.querySelector('#editor'),
+                height: '300px',
+                initialEditType: 'wysiwyg',
+                previewStyle: 'vertical',
+                initialValue: {{ user.signature|json_encode|raw }}
+            });
+        });
+
+        function syncEditor() {
+            if (editor) {
+                document.getElementById('hidden_signature').value = editor.getHTML();
+            }
+            return true;
+        }
+    </script>
+{% endblock %}

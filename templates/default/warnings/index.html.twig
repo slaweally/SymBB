@@ -1,0 +1,63 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Uyarı Sistemi — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo; Uyarı Sistemi
+    </div>
+
+    <div class="warnings-container">
+        <h1>Kullanıcıya Uyarı Ver</h1>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert-flash-error">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('success') %}
+            <div class="alert-flash-success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('notice') %}
+            <div class="alert-flash-notice">{{ message }}</div>
+        {% endfor %}
+
+        <form method="post" action="{{ path('app_warnings', {action: 'warn'}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('warn_user') }}">
+            <input type="hidden" name="pid" value="{{ target_pid|default(0) }}">
+            <input type="hidden" name="redirect" value="{{ redirect|default('') }}">
+
+            <div class="form-group">
+                <label for="uid">Hedef Kullanıcı ID (uid)</label>
+                <input type="number" id="uid" name="uid" class="form-control" min="1" required value="{{ target_uid|default('') }}" placeholder="Kullanıcı ID">
+            </div>
+
+            <div class="form-group">
+                <label for="type">Uyarı Tipi</label>
+                <select id="type" name="type" class="form-control">
+                    <option value="0">Özel uyarı (aşağıda puan girin)</option>
+                    {% for wt in warning_types %}
+                        <option value="{{ wt.tid }}">{{ wt.title }} ({{ wt.points }} puan)</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="custom_points">Özel Puan (tip seçilmediyse veya override için)</label>
+                <input type="number" id="custom_points" name="custom_points" class="form-control" min="0" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="custom_title">Özel Başlık</label>
+                <input type="text" id="custom_title" name="custom_title" class="form-control" placeholder="Opsiyonel">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notlar</label>
+                <textarea id="notes" name="notes" class="form-control" rows="4" placeholder="Uyarı notu..."></textarea>
+            </div>
+
+            <button type="submit" class="warn-btn">Uyarı Ver</button>
+        </form>
+    </div>
+{% endblock %}

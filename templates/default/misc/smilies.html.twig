@@ -1,0 +1,25 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Smilie Listesi — SymBB{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ path('app_board_index') }}" style="color:#4fc3f7; text-decoration:none;">Ana Sayfa</a> &raquo; Smilie Listesi
+{% endblock %}
+
+{% block body %}
+    <div class="smilies-page" style="background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.06); padding:24px;">
+        <h1 style="font-size:1.4rem; color:#1a1a2e; margin-bottom:20px;">Smilie Listesi</h1>
+        {% if smilies is empty %}
+            <p style="color:#999;">Henüz smilie tanımlanmamış.</p>
+        {% else %}
+            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:12px;">
+                {% for smilie in smilies %}
+                <div style="padding:8px; border:1px solid #eee; border-radius:6px; text-align:center;">
+                    <img src="{{ smilie.image starts with 'http' ? smilie.image : asset(smilie.image) }}" alt="{{ smilie.name }}" style="max-width:48px; max-height:48px;">
+                    <div style="font-size:.75rem; color:#666; margin-top:4px;">{{ smilie.find }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    Options -MultiViews +FollowSymlinks
+    RewriteEngine On
+    
+    # Dosya veya klasör GERÇEKTEN varsa onu aç (symlinkler dahil)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Yoksa her şeyi Symfony'nin kucağına (index.php) at
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

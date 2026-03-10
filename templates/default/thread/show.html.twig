@@ -1,0 +1,338 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}{{ thread.subject }} — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+    {% if forum %}<a href="{{ path('app_forum_display', {fid: thread.fid}) }}">{{ forum.name }}</a> &raquo; {% endif %}{{ thread.subject }}
+{% endblock %}
+
+{% block body %}
+    <div class="row m-0 mb-3">
+        <div class="col">{% if pagination is not empty %}{{ knp_pagination_render(pagination) }}{% endif %}</div>
+        {% if app.user and (not thread.closed or is_granted('ROLE_ADMIN')) %}
+        <div class="col-auto"><a href="{{ path('app_thread_reply', {tid: thread.tid}) }}" class="btn btn-primary"><i class="fa-solid fa-comment"></i> Cevap Yaz</a></div>
+        {% endif %}
+    </div>
+
+    <div class="thread-show-page" data-tid="{{ thread.tid }}">
+    <div class="card mb-3">
+        <div class="card-header rounded thead">
+            <span class="thread-title text-19" id="thread-subject">{{ thread.subject }}</span>
+            {% if app.user and (app.user.uid == thread.uid or is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN')) and (not thread.closed or is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN')) %}
+                <button type="button" class="thread-quick-edit-subject-btn btn btn-sm bg-transparent border-0 text-white" data-tid="{{ thread.tid }}" title="Başlığı düzenle"><i class="fa-solid fa-pen"></i></button>
+            {% endif %}
+        </div>
+        <div class="card-body smalltext">
+        <i class="fa-solid fa-eye"></i> {{ thread.views|number_format(0, ',', '.') }} görüntülenme |
+        <i class="fa-solid fa-comments"></i> {{ thread.replies|number_format(0, ',', '.') }} yanıt |
+        <i class="fa-solid fa-calendar"></i> {{ thread.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}
+        {% if thread.closed %}| <i class="fa-solid fa-lock"></i> Kilitli{% endif %}
+        {% if thread.stickied %}| <i class="fa-solid fa-thumb-tack"></i> Sabit{% endif %}
+        | <a href="{{ path('app_thread_print', {tid: thread.tid}) }}" target="_blank" class="links"><i class="fa-solid fa-print"></i> Yazdır</a>
+        {% if app.user and not user_has_rated_thread|default(false) and app.user.uid != thread.uid %}
+        | Yıldız Ver: {% for r in 1..5 %}
+            <form method="post" action="{{ path('app_rate_thread') }}" class="inline-form">
+                <input type="hidden" name="_token" value="{{ csrf_token('rate_thread') }}">
+                <input type="hidden" name="tid" value="{{ thread.tid }}">
+                <input type="hidden" name="rating" value="{{ r }}">
+                <a href="#" onclick="this.closest('form').submit(); return false;" title="{{ r }} yıldız">[{{ r }}]</a>
+            </form>
+        {% endfor %}
+        {% endif %}
+        {% if thread.numratings > 0 %}
+        | {{ thread.numratings }} oy — Ortalama: {{ (thread.totalratings / thread.numratings)|number_format(1) }} yıldız
+        {% endif %}
+        </div>
+    </div>
+
+    {% if poll %}
+    <div class="poll-block">
+        <h3 class="poll-question">{{ poll.question }}</h3>
+        {% if can_vote %}
+        <form method="post" action="{{ path('app_polls', {action: 'vote'}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('poll_vote') }}">
+            <input type="hidden" name="pid" value="{{ poll.pid }}">
+            {% for opt in poll.optionsArray %}
+            <div class="poll-option">
+                <label><input type="radio" name="option" value="{{ loop.index }}" required> {{ opt }}</label>
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn-primary">Oy Ver</button>
+        </form>
+        {% if app.user and (app.user.uid == thread.uid or is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN')) %}
+            <p style="margin-top:8px;"><a href="{{ path('app_polls', {action: 'editpoll', pid: poll.pid}) }}">[Anket Duzenle]</a></p>
+        {% endif %}
+        {% else %}
+        {% set votes_arr = poll.votesArray %}
+        {% set total = poll.numvotes %}
+        {% for opt in poll.optionsArray %}
+        <div class="poll-option">
+            <span>{{ opt }}</span>
+            {% set v = votes_arr[loop.index0] ?? 0 %}
+            {% set pct = total > 0 ? (v / total * 100)|round(1) : 0 %}
+            <div class="poll-bar-bg">
+                <div class="poll-bar-fill" style="width:{{ pct }}%;"></div>
+            </div>
+            <span class="poll-vote-count">{{ v }} oy ({{ pct }}%)</span>
+        </div>
+        {% endfor %}
+        <p class="poll-total">Toplam {{ total }} oy</p>
+        {% if app.user and (app.user.uid == thread.uid or is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN')) %}
+            <p><a href="{{ path('app_polls', {action: 'editpoll', pid: poll.pid}) }}">[Anket Duzenle]</a></p>
+        {% endif %}
+        {% if app.user and user_has_voted|default(false) and poll.closed == 0 and not poll.isExpired|default(false) %}
+            <form method="post" action="{{ path('app_polls', {action: 'do_undovote'}) }}" class="inline-form">
+                <input type="hidden" name="_token" value="{{ csrf_token('poll_undovote') }}">
+                <input type="hidden" name="pid" value="{{ poll.pid }}">
+                <button type="submit" class="btn-link">[Oyumu Geri Al]</button>
+            </form>
+        {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if app.user and not poll and (app.user.uid == thread.uid or is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN')) %}
+    <p><a href="{{ path('app_polls', {action: 'newpoll', tid: thread.tid}) }}">[Anket Ekle]</a></p>
+    {% endif %}
+
+    <div id="posts_container">
+    {% if pagination is empty %}
+        <div class="trow1 no-posts" style="padding: 40px; text-align: center;">Bu konuda henüz mesaj yok.</div>
+    {% else %}
+        <form method="post" action="{{ path('app_inlinemod') }}" id="inlinemod-posts">
+            <input type="hidden" name="_token" value="{{ csrf_token('inlinemod') }}">
+            <input type="hidden" name="type" value="posts">
+        {% for post in pagination %}
+        <a name="pid{{ post.pid }}" id="post-{{ post.pid }}" data-pid="{{ post.pid }}" data-tid="{{ thread.tid }}" data-uid="{{ post.uid }}"></a>
+        <div class="row g-2 mb-4" id="post-row-{{ post.pid }}">
+            <div class="col-auto d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
+                {% if post.user and app.user and app.user.showavatars == 1 %}
+                    <a href="{{ path('app_member', {'action': 'profile', 'uid': post.user.uid}) }}"><img class="rounded" style="width: 100px; height: 100px; padding: 0; object-fit: cover;" src="{{ asset(post.user.avatarUrl) }}" alt="{{ post.username }}"></a>
+                {% else %}
+                    <div class="rounded d-inline-block" style="width:100px;height:100px;background:#dee2e6;color:#666;font-size:36px;font-weight:bold;display:flex;align-items:center;justify-content:center;">{{ post.username|slice(0, 1)|upper }}</div>
+                {% endif %}
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body inline_row">
+                        <div class="row m-0 p-0 mb-3">
+                            <div class="col-auto d-block d-sm-block d-md-block d-lg-none me-2 align-self-center">
+                                {% if post.user and app.user and app.user.showavatars == 1 %}
+                                    <img class="rounded" style="width: 30px; height: 30px; object-fit: cover;" src="{{ asset(post.user.avatarUrl) }}" alt="">
+                                {% endif %}
+                            </div>
+                            <div class="col m-0 p-0 align-self-center">
+                                <h6 class="card-title mb-0">
+                                    {% if is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN') %}<input type="checkbox" name="items[]" value="{{ post.pid }}" class="form-check-input me-1">{% endif %}
+                                    <span style="font-weight: 700">{% if post.user %}<a href="{{ path('app_member', {'action': 'profile', 'uid': post.user.uid}) }}">{{ post.user|format_name }}</a>{% else %}{{ post.username }}{% endif %}</span>
+                                    <span class="text-uppercase text-desc small fw-normal ms-2">{{ post.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</span>
+                                </h6>
+                            </div>
+                            <div class="col-auto m-0 p-0 align-self-center text-end">
+                                <a href="{{ path('app_thread_show', {tid: thread.tid}) }}#post-{{ post.pid }}" class="links">#{{ (pagination.currentPageNumber - 1) * pagination.itemNumberPerPage + loop.index }}</a>
+                            </div>
+                        </div>
+                        {% if post.visible == -1 %}
+                        <div class="post_body text-deleted">Bu mesaj silindi.</div>
+                        {% if is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_post_edit', {pid: post.pid}) }}" class="btn btn-sm btn-secondary">Onar</a>
+                        {% endif %}
+                        {% else %}
+                        <div class="postbit-message-wrap">
+                            <div class="post_body scaleimages" id="pid_{{ post.pid }}">{{ post.message|parse_message }}</div>
+                            <div class="postbit-quick-edit-form hidden">
+                                <textarea class="postbit-quick-edit-textarea form-control" rows="8"></textarea>
+                                <div class="postbit-quick-edit-actions mt-2">
+                                    <button type="button" class="postbit-quick-edit-save btn btn-primary btn-sm">Kaydet</button>
+                                    <button type="button" class="postbit-quick-edit-cancel btn btn-secondary btn-sm">İptal</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% if post.attachments|length > 0 %}
+                        <div class="postbit-attachments mt-4">
+                            <i class="fa-solid fa-paperclip"></i> <strong>Ek Dosyalar</strong>
+                            <div class="row mt-2 g-1">
+                                {% for att in post.attachments %}
+                                    {% if att.isImage %}
+                                    <div class="col-auto"><a href="{{ path('app_attachment_view', {aid: att.aid}) }}" target="_blank"><img src="{{ path('app_attachment_view', {aid: att.aid}) }}" alt="" style="width:80px;height:80px" class="img-thumbnail"></a></div>
+                                    {% else %}
+                                    <div class="col-12"><a href="{{ path('app_attachment_download', {aid: att.aid}) }}" class="links">{{ att.attachname }} ({{ (att.filesize / 1024)|number_format(1) }} KB)</a></div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if app.user and app.user.showsigs == 1 and post.user and post.user.signature|trim %}
+                        <div class="signature scaleimages mt-4">{{ post.user.signature|parse_message }}</div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="card-footer border-top-0 py-2 my-0">
+                        <div class="row mt-0 pt-0 mb-0 pb-0">
+                            <div class="col-auto align-self-center small">
+                                {% if app.user %}<button type="button" class="postbit-multiquote-btn postlinks border-0 bg-transparent p-0" data-pid="{{ post.pid }}" data-username="{{ post.username }}"><i class="fa-solid fa-quote-left"></i> Alıntı</button>{% endif %}
+                            </div>
+                            <div class="col align-self-center small text-end">
+                                {% if app.user and (app.user.uid == post.uid or is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN')) %}
+                                <button type="button" class="postbit-quick-edit-btn postlinks border-0 bg-transparent p-0" data-pid="{{ post.pid }}" data-tid="{{ thread.tid }}">Düzenle</button>
+                                <form method="post" action="{{ path('app_post_delete', {'pid': post.pid}) }}" onsubmit="return confirm('Bu mesajı silmek istediğinize emin misiniz?');" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_post_' ~ post.pid) }}">
+                                    <button type="submit" class="postlinks border-0 bg-transparent p-0">Sil</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                            <div class="col-auto text-end">
+                                <div class="dropdown">
+                                    <a class="bg-transparent border-0 text-muted" data-bs-toggle="dropdown" role="button"><i class="fa-solid fa-ellipsis-vertical"></i></a>
+                                    <div class="dropdown-menu dropdown-menu-end border">
+                                        {% if app.user %}
+                                        <a href="{{ path('app_thread_reply', {'tid': thread.tid, 'replyto': post.pid}) }}" class="dropdown-item"><i class="fa-solid fa-reply"></i> Cevapla</a>
+                                        <a href="{{ path('app_report', {pid: post.pid}) }}" class="dropdown-item"><i class="fa-solid fa-flag"></i> Rapor Et</a>
+                                        {% if post.user and post.user.uid != app.user.uid %}
+                                        <a href="{{ path('app_member', {'action': 'profile', 'uid': post.user.uid}) }}" class="dropdown-item">Profil</a>
+                                        <a href="{{ path('app_private_message', {action: 'send', uid: post.user.uid}) }}" class="dropdown-item"><i class="fa-solid fa-envelope"></i> ÖM</a>
+                                        {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% if is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN') %}
+        <div class="inline-mod-actions">
+            <button type="submit" name="action" value="delete" onclick="return confirm('Seçili mesajları silmek istediğinize emin misiniz?');">Seçilenleri Sil</button>
+        </div>
+        {% endif %}
+        </form>
+        <div class="pagination-wrap">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    {% endif %}
+    </div>
+
+    {% if app.user %}
+        <div class="row mt-5 g-1 border-top border-bottom py-3">
+            <div class="col">
+                <form method="post" action="{{ path('app_thread_subscribe', {tid: thread.tid}) }}" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('subscribe_' ~ thread.tid) }}">
+                    <button type="submit" class="btn btn-secondary btn-sm">{{ is_subscribed|default(false) ? 'Abonelikten Çık' : 'Konuya Abone Ol' }}</button>
+                </form>
+                {% if is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_moderation', {action: 'movethread', tid: thread.tid}) }}" class="btn btn-secondary btn-sm">Konuyu Taşı</a>
+                {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <form method="post" action="{{ path('app_thread_moderate', {tid: thread.tid}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('moderate_thread_' ~ thread.tid) }}">
+                        {% if thread.closed %}
+                            <input type="hidden" name="action" value="open">
+                            <button type="submit" class="btn btn-secondary btn-sm">Konuyu Aç</button>
+                        {% else %}
+                            <input type="hidden" name="action" value="close">
+                            <button type="submit" class="btn btn-secondary btn-sm">Konuyu Kilitle</button>
+                        {% endif %}
+                    </form>
+                    <form method="post" action="{{ path('app_thread_moderate', {tid: thread.tid}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('moderate_thread_' ~ thread.tid) }}">
+                        {% if thread.stickied %}
+                            <input type="hidden" name="action" value="unstick">
+                            <button type="submit" class="btn btn-secondary btn-sm">Sabitlemeyi Kaldır</button>
+                        {% else %}
+                            <input type="hidden" name="action" value="stick">
+                            <button type="submit" class="btn btn-secondary btn-sm">Sabitle</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+            {% if not thread.closed or is_granted('ROLE_ADMIN') %}
+            <div class="col-auto"><a href="{{ path('app_thread_reply', {tid: thread.tid}) }}" class="btn btn-primary"><i class="fa-solid fa-comment"></i> Cevap Yaz</a></div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {# Hızlı Cevap (Quick Reply) - MyBB newreply_quick #}
+    {% if app.user and (not thread.closed or is_granted('ROLE_ADMIN')) and app.user.showquickreply == 1 %}
+    <table class="tborder mt-4" id="quick_reply_wrap" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead" colspan="2"><strong>Hızlı Cevap</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1" style="vertical-align: top;">
+                    <form method="post" action="{{ path('app_thread_reply', {tid: thread.tid}) }}" name="quick_reply_form" id="quick_reply_form">
+                        <input type="hidden" name="_token" value="{{ csrf_token('newreply') }}">
+                        <input type="hidden" name="tid" value="{{ thread.tid }}">
+                        <input type="hidden" name="subject" value="RE: {{ thread.subject }}">
+                        <table class="tborder" style="width: 100%; margin: 0;">
+                            <tr>
+                                <td class="trow1">
+                                    <label for="quick_reply_message">Mesaj</label><br>
+                                    <textarea name="message" id="quick_reply_message" class="quick_reply_text" rows="6" cols="80" required></textarea>
+                                    <br>
+                                    <button type="submit" class="button" id="quick_reply_submit"><i class="fa-solid fa-comment"></i> Cevap Yaz</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {% if app.user %}
+    <script>
+    document.querySelectorAll('.postbit-rep-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var targetUid = this.dataset.targetUid;
+            var pid = this.dataset.pid;
+            var username = this.dataset.username;
+            var redirect = this.dataset.redirect || window.location.href;
+            var repValue = prompt(username + ' kullanicisina rep verin. +1 veya -1 girin:', '1');
+            if (repValue === null) return;
+            repValue = parseInt(repValue, 10);
+            if (repValue !== 1 && repValue !== -1) {
+                alert('Sadece +1 veya -1 girebilirsiniz.');
+                return;
+            }
+            var comment = prompt('Yorum (istege bagli):', '');
+            if (comment === null) return;
+
+            var formData = new FormData();
+            formData.append('target_uid', targetUid);
+            formData.append('pid', pid);
+            formData.append('rep_value', repValue);
+            formData.append('comment', comment || '');
+            formData.append('redirect', redirect);
+            formData.append('_token', '{{ csrf_token('reputation_add') }}');
+
+            fetch('{{ path('app_reputation') }}', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    window.location.href = data.redirect || redirect;
+                } else {
+                    alert(data.error || 'Bir hata olustu.');
+                }
+            })
+            .catch(function() { alert('Baglanti hatasi.'); });
+        });
+    });
+    </script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Rep Puanlari — {{ target_user.username }} — SymBB{% endblock %}
+
+{% block body %}
+    <div class="reputation-container">
+        <h1>{{ target_user|format_name }} — Rep Puanlari</h1>
+        <p>Toplam rep: <strong>{{ target_user.reputation }}</strong></p>
+
+        <div class="breadcrumb reputation-breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_member', {action: 'profile', uid: target_user.uid}) }}">{{ target_user.username }}</a> &raquo;
+            Rep Puanlari
+        </div>
+
+        {% if reputations is empty %}
+            <p class="reputation-empty">Henuz rep alinmamis.</p>
+        {% else %}
+            <table class="rep-table">
+                <thead>
+                    <tr>
+                        <th>Veren</th>
+                        <th>Puan</th>
+                        <th>Yorum</th>
+                        <th>Mesaj</th>
+                        <th>Tarih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reputations %}
+                    <tr>
+                        <td>
+                            {% set adder = add_users[r.adduid] ?? null %}
+                            {% if adder %}<a href="{{ path('app_member', {action: 'profile', uid: adder.uid}) }}">{{ adder|format_name }}</a>{% else %}#{{ r.adduid }}{% endif %}
+                        </td>
+                        <td>{{ r.reputation > 0 ? '+' : '' }}{{ r.reputation }}</td>
+                        <td>{{ r.comments|slice(0, 50) }}{% if r.comments|length > 50 %}...{% endif %}</td>
+                        <td>
+                            {% if r.pid > 0 %}
+                                {% set post = posts[r.pid] ?? null %}
+                                {% if post and post.thread %}
+                                    <a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}#post-{{ r.pid }}">Konuya git</a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>{{ r.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if total > per_page %}
+            <p class="reputation-actions">
+                {% if page > 1 %}
+                    <a href="{{ path('app_reputation', {uid: target_user.uid, page: page - 1}) }}">&laquo; Onceki</a>
+                {% endif %}
+                Sayfa {{ page }} / {{ (total / per_page)|round(0, 'ceil') }}
+                {% if page * per_page < total %}
+                    <a href="{{ path('app_reputation', {uid: target_user.uid, page: page + 1}) }}">Sonraki &raquo;</a>
+                {% endif %}
+            </p>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

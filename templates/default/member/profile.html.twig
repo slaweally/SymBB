@@ -1,0 +1,70 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}{{ user.username }} — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        {{ user|format_name }}
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-avatar">
+            {{ user.username|slice(0, 1) }}
+        </div>
+        <div class="profile-name">{{ user|format_name }}</div>
+        <div class="profile-role">
+            {% if user.usergroup == 4 %}
+                <span class="profile-admin-badge">Yonetici</span>
+            {% else %}
+                Uye
+            {% endif %}
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-item">
+                <span class="stat-value">{{ user.threadnum|number_format(0, ',', '.') }}</span>
+                <span class="stat-label">Konu</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ user.postnum|number_format(0, ',', '.') }}</span>
+                <span class="stat-label">Mesaj</span>
+            </div>
+        </div>
+
+        <div class="profile-details">
+            <div class="detail-row">
+                <strong>Kayit Tarihi:</strong>
+                <span>
+                    {% if user.regdate > 0 %}
+                        {{ user.regdate|date('d.m.Y H:i', 'Europe/Istanbul') }}
+                    {% else %}
+                        Bilinmiyor
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <strong>Kullanici ID:</strong>
+                <span>{{ user.uid }}</span>
+            </div>
+            {% if is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN') %}
+            <div class="detail-row">
+                <a href="{{ path('app_member', {action: 'viewnotes', uid: user.uid}) }}">Kullanici Notlarini Gor</a>
+            </div>
+            {% endif %}
+            {% if app.user and app.user.uid != user.uid and user.hideemail == 0 %}
+            <div class="detail-row">
+                <a href="{{ path('app_member', {action: 'emailuser', uid: user.uid}) }}">E-posta Gönder</a>
+            </div>
+            {% endif %}
+            <div class="detail-row">
+                <a href="{{ path('app_member', {action: 'referrals', uid: user.uid}) }}">Referanslar</a>
+            </div>
+            <div class="detail-row">
+                <a href="{{ path('app_warnings', {action: 'view', uid: user.uid}) }}">Uyarılar</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

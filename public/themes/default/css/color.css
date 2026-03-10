@@ -1,0 +1,185 @@
+/* Curves UI Color Scheme - MyBB Original Theme */
+:root {
+    --primary: #007fd0;
+    --secondary: #ff7500;
+}
+
+legend {
+    border-bottom: 4px solid var(--primary);
+}
+
+a:link, a:visited {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover, a:active {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+.forum_on {
+    color: #444;
+}
+
+.forum_off {
+    color: #444;
+}
+
+.forum_off i {
+    color: #ccc;
+}
+
+.thead {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 6px 6px 0 0;
+    font-weight: bold;
+}
+
+.thead a:link, .thead a:visited {
+    color: #fff;
+}
+
+.thead a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background: var(--secondary);
+    color: #fff;
+    border-color: var(--secondary);
+}
+
+.btn-secondary {
+    background: #fff;
+    border-color: #dee2e6;
+    color: var(--primary);
+}
+
+.btn-secondary:hover {
+    background: #fff;
+    border-color: #dee2e6;
+    color: var(--secondary);
+}
+
+.card-header {
+    background: var(--primary);
+    color: #fff;
+    line-height: 1.2;
+    border-bottom: 0;
+    font-size: 16px;
+}
+
+.card-header a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.card-header a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.subject_new {
+    font-weight: bold;
+}
+
+.heading a {
+    color: var(--primary) !important;
+}
+
+.heading a:hover {
+    color: var(--secondary) !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-primary a:hover {
+    color: var(--secondary) !important;
+}
+
+.bg-primary {
+    background: var(--primary) !important;
+}
+
+.progress-bar {
+    background: var(--primary);
+}
+
+.navigation a:hover {
+    color: var(--secondary);
+}
+
+.links a:hover {
+    color: var(--secondary) !important;
+}
+
+.postlinks a:hover {
+    color: var(--secondary) !important;
+}
+
+.bg-nav a:hover {
+    color: var(--secondary);
+}
+
+.btn-page:hover {
+    background: var(--secondary);
+    color: #fff;
+    border-color: var(--secondary);
+}
+
+.btn-page-active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.btn-fd:hover {
+    background: var(--secondary);
+    color: #fff;
+    border-color: var(--secondary);
+}
+
+.btn-menu:hover {
+    background: var(--secondary);
+    color: #fff;
+}
+
+.btn-profile:hover {
+    background: var(--secondary);
+    color: #fff;
+}
+
+.btn-profile-active:hover {
+    background: var(--secondary);
+    color: #fff;
+}
+
+.top a:hover {
+    color: #fff;
+    background: #ccc !important;
+}
+
+blockquote {
+    border-left: 5px solid var(--primary);
+}
+
+.pagination a:hover {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+}
+
+.postbit_buttons a:hover {
+    color: var(--secondary);
+}

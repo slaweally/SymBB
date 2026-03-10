@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Smilies</title>
+    <link rel="stylesheet" href="{{ asset('themes/default/css/global.css') }}">
+</head>
+<body>
+    {% if smilies is empty %}
+        <p>Smilie yok.</p>
+    {% else %}
+        <div class="smilie-grid">
+            {% for smilie in smilies %}
+            <div class="smilie-cell" onclick="insertSmilie(' {{ smilie.find }} ')" title="{{ smilie.name }}">
+                <img src="{{ smilie.image starts with 'http' ? smilie.image : asset(smilie.image) }}" alt="{{ smilie.name }}">
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <script>
+        function insertSmilie(text) {
+            var editor = '{{ editor|e('js') }}';
+            var el = document.getElementById(editor) || document.getElementsByName(editor)[0];
+            if (el) {
+                el.focus();
+                if (document.selection) {
+                    var range = el.createTextRange();
+                    range.collapse(true);
+                    range.moveEnd('character', el.value.length);
+                    range.select();
+                } else if (el.setSelectionRange) {
+                    el.setSelectionRange(el.value.length, el.value.length);
+                }
+                el.value += text;
+            }
+            if (window.opener) window.close();
+        }
+    </script>
+</body>
+</html>

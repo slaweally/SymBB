@@ -1,0 +1,52 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Arama Sonuçları — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_private_message') }}">Özel Mesajlar</a> &raquo;
+        <a href="{{ path('app_private_message', {action: 'advanced_search'}) }}">Arama</a> &raquo;
+        Sonuçlar
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Özel mesaj arama sonuçları{% if keywords %} — "{{ keywords }}"{% endif %}</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if messages is empty %}
+            <tr>
+                <td class="trow1"><em>Sonuç bulunamadı.</em></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="tcat">Konu</td>
+                <td class="tcat">Gönderen</td>
+                <td class="tcat">Tarih</td>
+            </tr>
+            {% for pm in messages %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    <a href="{{ path('app_private_message', {action: 'read', pmid: pm.pmid}) }}">{{ pm.subject }}</a>
+                </td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    {% if user_map[pm.fromid] is defined %}
+                    <a href="{{ path('app_member', {action: 'profile', uid: pm.fromid}) }}">{{ user_map[pm.fromid] }}</a>
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    {{ pm.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

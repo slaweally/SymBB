@@ -1,0 +1,13 @@
+{
+    "allownotices": "tinyint(1)",
+    "hideemail": "tinyint(1)",
+    "receivepms": "tinyint(1)",
+    "pmnotice": "tinyint(1)",
+    "showsigs": "tinyint(1)",
+    "showavatars": "tinyint(1)",
+    "showquickreply": "tinyint(1)",
+    "ppp": "smallint unsigned",
+    "tpp": "smallint unsigned",
+    "timezone": "varchar(5)",
+    "dst": "tinyint(1)"
+}

@@ -1,0 +1,33 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Giris Yap — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="auth-card">
+        <h1>Giris Yap</h1>
+
+        {% if error %}
+            <div class="auth-error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_login') }}">
+            <div class="form-group">
+                <label for="username">Kullanici Adi</label>
+                <input type="text" id="username" name="_username" value="{{ last_username }}" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Sifre</label>
+                <input type="password" id="password" name="_password" required>
+            </div>
+            <button type="submit" class="btn-primary">Giris Yap</button>
+        </form>
+
+        <div class="auth-footer">
+            Hesabin yok mu? <a href="{{ path('app_register') }}">Kayit Ol</a>
+            &nbsp;|&nbsp;
+            <a href="{{ path('app_member', {action: 'lostpw'}) }}">Sifremi Unuttum</a>
+        </div>
+    </div>
+{% endblock %}

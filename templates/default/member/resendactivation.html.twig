@@ -1,0 +1,18 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Aktivasyon E-postasi Tekrar Gonder — SymBB{% endblock %}
+
+{% block body %}
+<div class="auth-card">
+    <h1>Aktivasyon E-postasi Tekrar Gonder</h1>
+    <p>Kayit olurken kullandiginiz e-posta adresini girin. Aktivasyon linki tekrar gonderilecektir.</p>
+    <form method="post" action="{{ path('app_member', {action: 'do_resendactivation'}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('resendactivation') }}">
+        <div class="form-group">
+            <label for="email">E-posta Adresi</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+        </div>
+        <button type="submit" class="btn-primary">Gonder</button>
+    </form>
+</div>
+{% endblock %}

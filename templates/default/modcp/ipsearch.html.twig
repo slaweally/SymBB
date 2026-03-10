@@ -1,0 +1,59 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}IP Arama — Mod CP — SymBB{% endblock %}
+
+{% block body %}
+<div class="modcp-container">
+    <h1 class="modcp-title">IP Arama</h1>
+    <p><a href="{{ path('app_modcp') }}">« Mod paneline dön</a></p>
+
+    <form method="get" action="{{ path('app_modcp', {action: 'ipsearch'}) }}" class="mb-3">
+        <input type="hidden" name="action" value="ipsearch">
+        <label>IP adresi:</label>
+        <input type="text" name="ipaddress" value="{{ ipaddress }}" placeholder="örn. 192.168.1.1">
+        <button type="submit" class="btn btn-primary">Ara</button>
+    </form>
+
+    {% if ipaddress %}
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead" colspan="2"><strong>IP: {{ ipaddress }} — Sonuçlar</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if users is not empty %}
+            <tr>
+                <td class="tcat">Kayıt / Son IP ile eşleşen kullanıcılar</td>
+            </tr>
+            {% for u in users %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    <a href="{{ path('app_member', {action: 'profile', uid: u.uid}) }}">{{ u.username }}</a> (UID: {{ u.uid }})
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            {% if posts is not empty %}
+            <tr>
+                <td class="tcat">Bu IP ile yazılan mesajlar</td>
+            </tr>
+            {% for p in posts %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    <a href="{{ path('app_thread_show', {id: p.tid}) }}#pid{{ p.pid }}">{{ p.subject|slice(0, 60) }}{% if p.subject|length > 60 %}...{% endif %}</a>
+                    — {{ p.username }} (PID: {{ p.pid }})
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            {% if users is empty and posts is empty and ipaddress %}
+            <tr>
+                <td class="trow1"><em>Bu IP için sonuç bulunamadı.</em></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}

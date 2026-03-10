@@ -1,0 +1,47 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}{{ pm.subject }} — Ozel Mesajlar — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_private_message') }}">Ozel Mesajlar</a> &raquo;
+            Mesaj Oku
+        </div>
+    </div>
+
+    <div class="pm-container">
+        <div class="pm-menu">
+            <h3>Mesajlar</h3>
+            <ul>
+                <li><a href="{{ path('app_private_message') }}">Gelen Kutusu</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'send'}) }}">Yeni Mesaj Gonder</a></li>
+            </ul>
+        </div>
+        <div class="pm-content">
+            <div class="pm-header">
+                <h1>{{ pm.subject }}</h1>
+                <div class="pm-meta">
+                    <span><strong>Gonderen:</strong> {{ pm.fromUser ? (pm.fromUser|format_name) : 'Bilinmeyen' }}</span>
+                    <span><strong>Tarih:</strong> {{ pm.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</span>
+                </div>
+            </div>
+
+            <div class="pm-body">
+                {{ pm.message|parse_message }}
+            </div>
+
+            <div class="btn-row">
+                <a href="{{ path('app_private_message', {action: 'send', to: pm.fromUser ? pm.fromUser.username : '', subject: 'RE: ' ~ pm.subject}) }}" class="btn-reply">Yanitla</a>
+                <form method="post" action="{{ path('app_private_message', {action: 'delete'}) }}" class="d-inline" onsubmit="return confirm('Bu mesaji silmek istediginize emin misiniz?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('pm_delete') }}">
+                    <input type="hidden" name="pmid" value="{{ pm.pmid }}">
+                    <button type="submit" class="btn btn-outline">Sil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

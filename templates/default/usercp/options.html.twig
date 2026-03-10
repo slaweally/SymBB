@@ -1,0 +1,133 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Secenekleri Duzenle — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="options-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="{{ path('app_usercp') }}">Kontrol Paneli Ana Sayfa</a></li>
+                <li><a href="{{ path('app_usercp', {'action': 'profile'}) }}">Profil Düzenle</a></li>
+                <li><a href="{{ path('app_usercp', {'action': 'editsig'}) }}">İmza Düzenle</a></li>
+                <li><a href="{{ path('app_usercp', {'action': 'options'}) }}" class="active">Seçenekleri Düzenle</a></li>
+                <li><a href="{{ path('app_usercp', {'action': 'subscriptions'}) }}">Konu Abonelikleri</a></li>
+                <li><a href="{{ path('app_usercp', {'action': 'drafts'}) }}">Taslaklar</a></li>
+                <li><a href="{{ path('app_usercp', {'action': 'password'}) }}">Şifre Değiştir</a></li>
+                <li><a href="{{ path('app_usercp', {'action': 'email'}) }}">E-posta Değiştir</a></li>
+                <li><a href="{{ path('app_usercp', {'action': 'avatar'}) }}">Avatar Yükle</a></li>
+            </ul>
+        </aside>
+        
+        <main class="content">
+            <h1>Seçenekleri Düzenle</h1>
+
+            {% for message in app.flashes('success') %}
+                <div class="alert-success">{{ message }}</div>
+            {% endfor %}
+
+            <form method="post" action="{{ path('app_usercp', {'action': 'options'}) }}">
+                
+                <div class="fieldset-block">
+                    <legend>Gizlilik Seçenekleri</legend>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="hideemail" value="1" {% if user.hideemail == 1 %}checked{% endif %}>
+                            E-posta adresimi diğer kullanıcılardan gizle.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="fieldset-block">
+                    <legend>Mesajlaşma ve Bildirimler</legend>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="receivepms" value="1" {% if user.receivepms == 1 %}checked{% endif %}>
+                            Diğer kullanıcılardan Özel Mesaj (PM) alımına izin ver.
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="pmnotice" value="1" {% if user.pmnotice == 1 %}checked{% endif %}>
+                            Yeni bir Özel Mesaj aldığımda pencere (uyarı) ile bildir.
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="allownotices" value="1" {% if user.allownotices == 1 %}checked{% endif %}>
+                            Yöneticilerden e-posta bültenleri/duyuruları al.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="fieldset-block">
+                    <legend>Konu Görünüm Seçenekleri</legend>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="showsigs" value="1" {% if user.showsigs == 1 %}checked{% endif %}>
+                            Kullanıcı imzalarını göster.
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="showavatars" value="1" {% if user.showavatars == 1 %}checked{% endif %}>
+                            Kullanıcı avatarlarını göster.
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="showquickreply" value="1" {% if user.showquickreply == 1 %}checked{% endif %}>
+                            Konu gösteriminde hızlı cevap kutusunu aç.
+                        </label>
+                    </div>
+                    
+                    <div class="select-group">
+                        <label>Sayfa Başına Gösterilecek Konu (TPP):</label>
+                        <select name="tpp">
+                            <option value="0" {% if user.tpp == 0 %}selected{% endif %}>Varsayılanı Kullan</option>
+                            <option value="10" {% if user.tpp == 10 %}selected{% endif %}>10</option>
+                            <option value="20" {% if user.tpp == 20 %}selected{% endif %}>20 (MyBB Varsayılan)</option>
+                            <option value="30" {% if user.tpp == 30 %}selected{% endif %}>30</option>
+                            <option value="40" {% if user.tpp == 40 %}selected{% endif %}>40</option>
+                        </select>
+                    </div>
+
+                    <div class="select-group">
+                        <label>Sayfa Başına Gösterilecek Mesaj (PPP):</label>
+                        <select name="ppp">
+                            <option value="0" {% if user.ppp == 0 %}selected{% endif %}>Varsayılanı Kullan</option>
+                            <option value="10" {% if user.ppp == 10 %}selected{% endif %}>10 (MyBB Varsayılan)</option>
+                            <option value="20" {% if user.ppp == 20 %}selected{% endif %}>20</option>
+                            <option value="30" {% if user.ppp == 30 %}selected{% endif %}>30</option>
+                            <option value="40" {% if user.ppp == 40 %}selected{% endif %}>40</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fieldset-block">
+                    <legend>Tarih ve Saat Seçenekleri</legend>
+                    <div class="select-group">
+                        <label>Zaman Dilimi (Timezone):</label>
+                        <select name="timezone">
+                            <option value="0" {% if user.timezone == '0' %}selected{% endif %}>Varsayılan</option>
+                            <option value="3" {% if user.timezone == '3' %}selected{% endif %}>(GMT+3) Istanbul, Moscow</option>
+                            <option value="2" {% if user.timezone == '2' %}selected{% endif %}>(GMT+2) Athens, Helsinki</option>
+                            <option value="1" {% if user.timezone == '1' %}selected{% endif %}>(GMT+1) Berlin, Rome</option>
+                        </select>
+                    </div>
+                    <div class="select-group">
+                        <label>Yaz Saati Uygulaması (DST):</label>
+                        <select name="dst">
+                            <option value="0" {% if user.dst == 0 %}selected{% endif %}>DST Ayarını Otomatik Algıla</option>
+                            <option value="1" {% if user.dst == 1 %}selected{% endif %}>DST Her Zaman Açık</option>
+                            <option value="2" {% if user.dst == 2 %}selected{% endif %}>DST Her Zaman Kapalı</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Seçenekleri Kaydet</button>
+            </form>
+        </main>
+    </div>
+{% endblock %}

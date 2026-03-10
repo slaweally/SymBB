@@ -1,0 +1,49 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Özel Mesaj Ara — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_private_message') }}">Özel Mesajlar</a> &raquo;
+        Gelişmiş Arama
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Özel mesajlarda ara</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    <form method="post" action="{{ path('app_private_message', {action: 'do_search'}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('pm_search') }}">
+                        <div class="mb-3">
+                            <label for="keywords" class="form-label">Arama ifadesi</label>
+                            <input type="text" id="keywords" name="keywords" class="form-control" required placeholder="Anahtar kelime">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Aranacak alan</label>
+                            <label><input type="checkbox" name="subject" value="1"> Konu</label>
+                            <label class="ms-2"><input type="checkbox" name="message" value="1"> Mesaj içeriği</label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Klasörler</label>
+                            {% for f in folders %}
+                            <label class="d-block"><input type="checkbox" name="folder[]" value="{{ f.id }}"> {{ f.name }}</label>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="sortby" value="dateline">
+                        <input type="hidden" name="order" value="desc">
+                        <button type="submit" class="btn btn-primary">Ara</button>
+                        <a href="{{ path('app_private_message') }}" class="btn btn-outline-secondary">İptal</a>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

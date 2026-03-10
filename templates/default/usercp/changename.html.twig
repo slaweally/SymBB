@@ -1,0 +1,43 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Kullanıcı Adı Değiştir — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+        Kullanıcı Adı Değiştir
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Kullanıcı adı değiştir</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    {% if error %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% endif %}
+                    <form method="post" action="{{ path('app_usercp', {action: 'do_changename'}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('changename') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Yeni kullanıcı adı</label>
+                            <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" required minlength="3">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mevcut şifre</label>
+                            <input type="password" id="password" name="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Değiştir</button>
+                        <a href="{{ path('app_usercp') }}" class="btn btn-outline-secondary">İptal</a>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

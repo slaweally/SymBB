@@ -1,0 +1,138 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}SymBB — Forum Ana Sayfa{% endblock %}
+
+{% block stylesheets %}
+<style>.container-fluid.navigation { display: none; }</style>
+{% endblock %}
+
+{% block body %}
+    {% if app.user %}
+    <table class="tborder" style="width: 100%; margin-bottom: 15px;">
+        <tr>
+            <td class="tfoot" style="text-align: right;">
+                <form method="post" action="{{ path('app_misc', {action: 'markread'}) }}" style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('markread') }}">
+                    <button type="submit" class="button"><i class="fa-solid fa-check"></i> Tümünü Okundu İşaretle</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    {% endif %}
+
+    {% if pending_report_count is defined and pending_report_count > 0 and (is_granted('ROLE_MODERATOR') or is_granted('ROLE_ADMIN')) %}
+        <table class="tborder" style="width: 100%; margin-bottom: 15px;">
+            <tr>
+                <td class="trow1" style="background: #ffebee; color: #c62828;">
+                    <i class="fa-solid fa-circle-exclamation"></i> İncelenmesi gereken {{ pending_report_count }} adet rapor var
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+
+    {% if forum_data.categories is empty %}
+        <table class="tborder" style="width: 100%;">
+            <thead>
+                <tr>
+                    <td class="thead"><strong>Forum Ana Sayfa</strong></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="trow1">Henüz forum oluşturulmamış.</td>
+                </tr>
+            </tbody>
+        </table>
+    {% else %}
+        {% for category in forum_data.categories %}
+            {% if category.forums is not empty %}
+            <table class="tborder" style="width: 100%; margin-bottom: 15px;">
+                <thead>
+                    <tr>
+                        <td class="thead" colspan="5">
+                            <a href="{{ path('app_board_index') }}" style="color: #fff;">{{ category.name }}</a>
+                            {% if category.description is defined and category.description %}<span class="smalltext"> — {{ category.description }}</span>{% endif %}
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="tcat" style="width: 40px;"></td>
+                        <td class="tcat">Forum</td>
+                        <td class="tcat" style="width: 80px; text-align: center;">Konu</td>
+                        <td class="tcat" style="width: 80px; text-align: center;">Mesaj</td>
+                        <td class="tcat" style="width: 25%;">Son Mesaj</td>
+                    </tr>
+                    {% for forum in category.forums %}
+                    {% set row_class = loop.index is odd ? 'trow1' : 'trow2' %}
+                    {% set forum_class = forum.lastpost > 0 ? 'forum_on' : 'forum_off' %}
+                    <tr>
+                        <td class="{{ row_class }}" style="text-align: center; width: 40px;">
+                            <div class="forum_status {{ forum_class }}" title="{{ forum.lastpost > 0 ? 'Yeni mesaj var' : 'Yeni mesaj yok' }}">
+                                <i class="fa-solid fa-circle"></i>
+                            </div>
+                        </td>
+                        <td class="{{ row_class }}">
+                            <strong><a href="{{ path('app_forum_display', {fid: forum.fid}) }}">{{ forum.name }}</a></strong>
+                            {% if forum.description %}<br><span class="small-forum">{{ forum.description }}</span>{% endif %}
+                        </td>
+                        <td class="{{ row_class }}" style="text-align: center;">{{ forum.threads|number_format(0, ',', '.') }}</td>
+                        <td class="{{ row_class }}" style="text-align: center;">{{ forum.posts|number_format(0, ',', '.') }}</td>
+                        <td class="{{ row_class }}">
+                            {% if forum.lastpost > 0 %}
+                                <a href="{{ path('app_thread_show', {tid: forum.lastposttid}) }}#lastpost" class="links">{{ forum.lastpostsubject|length > 35 ? forum.lastpostsubject|slice(0, 35) ~ '...' : forum.lastpostsubject }}</a><br>
+                                <span class="smalltext">{{ forum.lastpost|date('d.m.Y H:i', 'Europe/Istanbul') }} — {% if forum.lastposteruid > 0 %}<a href="{{ path('app_member', {'action': 'profile', 'uid': forum.lastposteruid}) }}" class="links">{{ forum.lastposter }}</a>{% else %}{{ forum.lastposter ?: 'Misafir' }}{% endif %}</span>
+                            {% else %}
+                                <span class="smalltext">Son mesaj yok</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% set online_row = 'trow1' %}
+    <table class="tborder" style="width: 100%; margin-bottom: 15px;">
+        <thead>
+            <tr>
+                <td class="thead"><a href="{{ path('app_online') }}" style="color: #fff;">Kimler Çevrimiçi</a></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="{{ online_row }}">
+                    {% if active_users is empty %}
+                        <span class="empty-online">Şu an kimse çevrimiçi değil.</span>
+                    {% else %}
+                        {% for user in active_users %}
+                            <a href="{{ path('app_member', {'action': 'profile', 'uid': user.uid}) }}">{{ user|format_name }}</a>{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><a href="{{ path('app_board_index') }}" style="color: #fff;">İstatistikler</a></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    <p class="mb-0">{{ total_threads|number_format(0, ',', '.') }} Konu</p>
+                    <p class="mb-0">{{ total_posts|number_format(0, ',', '.') }} Mesaj</p>
+                    <p class="mb-0">{{ total_members|number_format(0, ',', '.') }} Üye</p>
+                    {% if last_member %}
+                    <p class="mb-0">Son üye: <a href="{{ path('app_member', {'action': 'profile', 'uid': last_member.uid}) }}" class="links">{{ last_member|format_name }}</a></p>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

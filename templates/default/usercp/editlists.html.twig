@@ -1,0 +1,90 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Arkadaş / Engel Listesi — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+        Arkadaş / Engel Listesi
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Arkadaş listesi ({{ buddies|length }})</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    <form method="post" action="{{ path('app_usercp', {action: 'do_editlists'}) }}" class="mb-3">
+                        <input type="hidden" name="_token" value="{{ csrf_token('editlists') }}">
+                        <input type="hidden" name="manage" value="buddy">
+                        <label for="add_buddy">Kullanıcı adı ekle (virgülle ayırarak birden fazla):</label>
+                        <input type="text" id="add_buddy" name="add_username" class="form-control d-inline-block w-auto" placeholder="Kullanıcı adı">
+                        <button type="submit" class="btn btn-primary btn-sm">Arkadaş listesine ekle</button>
+                    </form>
+                    {% if buddies is empty %}
+                    <p class="text-muted"><em>Arkadaş listeniz boş.</em></p>
+                    {% else %}
+                    <ul class="list-unstyled">
+                    {% for b in buddies %}
+                        <li class="mb-1">
+                            <a href="{{ path('app_member', {action: 'profile', uid: b.uid}) }}">{{ b.username }}</a>
+                            {% if b.online %}<span class="badge bg-success">Çevrimiçi</span>{% endif %}
+                            <form method="post" action="{{ path('app_usercp', {action: 'do_editlists'}) }}" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('editlists') }}">
+                                <input type="hidden" name="manage" value="buddy">
+                                <input type="hidden" name="delete" value="{{ b.uid }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Kaldır</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="tborder mt-3" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Engel listesi ({{ ignored|length }})</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    <form method="post" action="{{ path('app_usercp', {action: 'do_editlists'}) }}" class="mb-3">
+                        <input type="hidden" name="_token" value="{{ csrf_token('editlists') }}">
+                        <input type="hidden" name="manage" value="ignored">
+                        <label for="add_ignore">Kullanıcı adı ekle:</label>
+                        <input type="text" id="add_ignore" name="add_username" class="form-control d-inline-block w-auto" placeholder="Kullanıcı adı">
+                        <button type="submit" class="btn btn-primary btn-sm">Engel listesine ekle</button>
+                    </form>
+                    {% if ignored is empty %}
+                    <p class="text-muted"><em>Engel listeniz boş.</em></p>
+                    {% else %}
+                    <ul class="list-unstyled">
+                    {% for u in ignored %}
+                        <li class="mb-1">
+                            {{ u.username }}
+                            <form method="post" action="{{ path('app_usercp', {action: 'do_editlists'}) }}" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('editlists') }}">
+                                <input type="hidden" name="manage" value="ignored">
+                                <input type="hidden" name="delete" value="{{ u.uid }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Kaldır</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

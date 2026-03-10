@@ -1,0 +1,85 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Yonetim Kadrosu — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="team-header">
+        <h1>Yonetim Kadrosu</h1>
+        <p>Forum yoneticileri ve moderatörler</p>
+    </div>
+
+    {% if admins is empty and super_mods is empty and mods is empty %}
+        <div class="empty-team">Henuz yonetim kadrosu atanmamis.</div>
+    {% else %}
+        {% if admins is not empty %}
+            <div class="team-section">
+                <h2 class="team-section-title team-admin">Yoneticiler</h2>
+                <div class="team-grid">
+                    {% for user in admins %}
+                        <div class="team-card">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar starts with 'http' ? user.avatar : asset(user.avatar) }}" alt="{{ user.username }}" class="team-avatar">
+                            {% else %}
+                                <div class="team-avatar-placeholder">{{ user.username|slice(0, 1)|upper }}</div>
+                            {% endif %}
+                            <div class="team-info">
+                                <div class="team-name">
+                                    <a href="{{ path('app_member', {'action': 'profile', 'uid': user.uid}) }}">{{ user|format_name }}</a>
+                                </div>
+                                <div class="team-stats">{{ user.postnum|number_format(0, ',', '.') }} mesaj</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if super_mods is not empty %}
+            <div class="team-section">
+                <h2 class="team-section-title team-supermod">Super Moderatorler</h2>
+                <div class="team-grid">
+                    {% for user in super_mods %}
+                        <div class="team-card">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar starts with 'http' ? user.avatar : asset(user.avatar) }}" alt="{{ user.username }}" class="team-avatar">
+                            {% else %}
+                                <div class="team-avatar-placeholder">{{ user.username|slice(0, 1)|upper }}</div>
+                            {% endif %}
+                            <div class="team-info">
+                                <div class="team-name">
+                                    <a href="{{ path('app_member', {'action': 'profile', 'uid': user.uid}) }}">{{ user|format_name }}</a>
+                                </div>
+                                <div class="team-stats">{{ user.postnum|number_format(0, ',', '.') }} mesaj</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if mods is not empty %}
+            <div class="team-section">
+                <h2 class="team-section-title team-mod">Moderatorler</h2>
+                <div class="team-grid">
+                    {% for user in mods %}
+                        <div class="team-card">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar starts with 'http' ? user.avatar : asset(user.avatar) }}" alt="{{ user.username }}" class="team-avatar">
+                            {% else %}
+                                <div class="team-avatar-placeholder">{{ user.username|slice(0, 1)|upper }}</div>
+                            {% endif %}
+                            <div class="team-info">
+                                <div class="team-name">
+                                    <a href="{{ path('app_member', {'action': 'profile', 'uid': user.uid}) }}">{{ user|format_name }}</a>
+                                </div>
+                                <div class="team-stats">{{ user.postnum|number_format(0, ',', '.') }} mesaj</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

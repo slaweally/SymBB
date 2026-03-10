@@ -1,0 +1,77 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Gelişmiş Üye Arama — SymBB{% endblock %}
+
+{% block body %}
+    <div class="member-header">
+        <h1>Gelişmiş Üye Arama</h1>
+        <p>Kriterlere göre üye listesini filtreleyin</p>
+    </div>
+
+    <div class="member-search-form">
+        <form method="get" action="{{ path('app_memberlist') }}">
+            <table class="member-table">
+                <tbody>
+                    <tr>
+                        <th><label for="username">Kullanıcı Adı (içerir)</label></th>
+                        <td>
+                            <input type="text" name="username" id="username" value="{{ app.request.query.get('username', '') }}" placeholder="Örn: admin">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="skype">Skype</label></th>
+                        <td>
+                            <input type="text" name="skype" id="skype" value="{{ app.request.query.get('skype', '') }}" placeholder="Skype kullanıcı adı">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="google">Google Hangouts</label></th>
+                        <td>
+                            <input type="text" name="google" id="google" value="{{ app.request.query.get('google', '') }}" placeholder="Google Hangouts ID">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="icq">ICQ Numarası</label></th>
+                        <td>
+                            <input type="text" name="icq" id="icq" value="{{ app.request.query.get('icq', '') }}" placeholder="ICQ (MyBB mirası)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="regdate_days">Kayıt Tarihi</label></th>
+                        <td>
+                            <select name="regdate_days" id="regdate_days">
+                                <option value="">Tümü</option>
+                                <option value="1" {{ app.request.query.get('regdate_days') == '1' ? 'selected' : '' }}>Son 1 gün</option>
+                                <option value="7" {{ app.request.query.get('regdate_days') == '7' ? 'selected' : '' }}>Son 7 gün</option>
+                                <option value="14" {{ app.request.query.get('regdate_days') == '14' ? 'selected' : '' }}>Son 14 gün</option>
+                                <option value="30" {{ app.request.query.get('regdate_days') == '30' ? 'selected' : '' }}>Son 30 gün</option>
+                                <option value="90" {{ app.request.query.get('regdate_days') == '90' ? 'selected' : '' }}>Son 90 gün</option>
+                            </select>
+                            <span class="form-hint">Bu süre içinde kayıt olan üyeler</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="postnum_min">Mesaj Sayısı (min)</label></th>
+                        <td>
+                            <input type="number" name="postnum_min" id="postnum_min" value="{{ app.request.query.get('postnum_min', '') }}" placeholder="En az" min="0">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="postnum_max">Mesaj Sayısı (max)</label></th>
+                        <td>
+                            <input type="number" name="postnum_max" id="postnum_max" value="{{ app.request.query.get('postnum_max', '') }}" placeholder="En fazla" min="0">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Ara</button>
+                <a href="{{ path('app_memberlist') }}" class="btn-outline">Temizle</a>
+            </div>
+        </form>
+    </div>
+
+    <p class="member-search-link">
+        <a href="{{ path('app_memberlist') }}">&larr; Üye listesine dön</a>
+    </p>
+{% endblock %}

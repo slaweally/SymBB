@@ -1,0 +1,103 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Yanit Yaz — {{ thread.subject }} — SymBB{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_thread_show', {tid: thread.tid}) }}">{{ thread.subject }}</a> &raquo;
+        Yanit Yaz
+    </div>
+
+    <div class="reply-card">
+        <h1>Yanit Yaz — {{ thread.subject }}</h1>
+
+        {% if error %}
+            <div class="form-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" id="reply-form" enctype="multipart/form-data" onsubmit="return syncEditor()">
+            {% if draft_pid %}
+                <input type="hidden" name="draft_pid" value="{{ draft_pid }}">
+            {% endif %}
+            <div class="form-group">
+                <label>Mesaj</label>
+                <div id="editor"></div>
+                <input type="hidden" name="message" id="hidden_message">
+            </div>
+            <div class="form-group">
+                <label for="attachments">Eklentiler</label>
+                <input type="file" id="attachments" name="attachments[]" multiple accept=".jpg,.jpeg,.png,.gif,.pdf,.zip,.rar">
+                <small class="form-hint">Izın verilen: jpg, png, gif, pdf, zip, rar. Maks 5MB.</small>
+            </div>
+            <div class="btn-row">
+                <button type="submit" class="btn-primary">Yaniti Gonder</button>
+                <button type="submit" name="savedraft" value="1" class="btn-draft" formnovalidate>Taslak Olarak Kaydet</button>
+                <a href="{{ path('app_thread_show', {tid: thread.tid}) }}" class="btn-back">Vazgec</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script>
+        let editor;
+        var MULTIQUOTE_STORAGE_KEY = 'symbb_multiquote_pids';
+        var TID = {{ thread.tid }};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let initialMessage = {{ (draft_message|default(app.request.request.get('message', '')))|json_encode|raw }};
+
+            editor = new toastui.Editor({
+                el: document.querySelector('#editor'),
+                height: '300px',
+                initialEditType: 'wysiwyg',
+                previewStyle: 'vertical',
+                initialValue: initialMessage
+            });
+
+            var pids = [];
+            try {
+                var raw = sessionStorage.getItem(MULTIQUOTE_STORAGE_KEY);
+                if (raw) {
+                    var data = JSON.parse(raw);
+                    pids = data[TID] || [];
+                    if (pids.length > 0) {
+                        delete data[TID];
+                        sessionStorage.setItem(MULTIQUOTE_STORAGE_KEY, JSON.stringify(data));
+                    }
+                }
+            } catch (e) {}
+
+            if (pids.length > 0) {
+                var formData = new FormData();
+                pids.forEach(function(pid) { formData.append('pid', pid); });
+                fetch('{{ path('app_xmlhttp', {action: 'get_multiquoted'}) }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.text) {
+                        var cur = editor.getMarkdown();
+                        editor.setMarkdown((cur ? cur + '\n\n' : '') + data.text);
+                    }
+                })
+                .catch(function() {});
+            }
+        });
+
+        function syncEditor() {
+            if (editor) {
+                document.getElementById('hidden_message').value = editor.getHTML();
+            }
+            return true;
+        }
+    </script>
+{% endblock %}

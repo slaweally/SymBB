@@ -1,0 +1,65 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Üye Grupları — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+        Üye Grupları
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Üye olduğunuz gruplar</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if member_of is empty %}
+            <tr>
+                <td class="trow1"><em>Kayıtlı grup bilgisi yok.</em></td>
+            </tr>
+            {% else %}
+            {% for g in member_of %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    {{ g.title }}
+                    {% if g.is_primary %}<span class="badge bg-secondary">Birincil</span>{% endif %}
+                    {% if not g.is_primary and not g.is_display %}
+                    <a href="{{ path('app_usercp', {action: 'usergroups', leavegroup: g.gid, _token: csrf_token('usergroups_leave')}) }}" class="btn btn-outline-danger btn-sm ms-2" onclick="return confirm('Gruptan ayrılmak istediğinize emin misiniz?');">Ayrıl</a>
+                    {% endif %}
+                    {% if not g.is_display %}
+                    <a href="{{ path('app_usercp', {action: 'usergroups', setdisplay: g.gid, _token: csrf_token('usergroups_setdisplay')}) }}" class="btn btn-outline-primary btn-sm ms-1">Görünüm yap</a>
+                    {% else %}
+                    <span class="badge bg-primary ms-1">Görünüm</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+
+    {% if joinable is not empty %}
+    <table class="tborder mt-3" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Katılabileceğiniz gruplar</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for g in joinable %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    {{ g.title }}
+                    <a href="{{ path('app_usercp', {action: 'usergroups', joingroup: g.gid, _token: csrf_token('usergroups_join')}) }}" class="btn btn-primary btn-sm ms-2">Katıl</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}

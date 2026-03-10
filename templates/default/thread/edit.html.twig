@@ -1,0 +1,70 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Mesaji Duzenle — SymBB{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}">{{ post.thread.subject }}</a> &raquo;
+        Mesaji Duzenle
+    </div>
+
+    <div class="edit-card">
+        <h1>{{ is_soft_deleted|default(false) ? 'Silinmis Mesaji Geri Yukle' : 'Mesaji Duzenle' }}</h1>
+
+        {% if error %}
+            <div class="form-error">{{ error }}</div>
+        {% endif %}
+
+        {% if is_soft_deleted|default(false) %}
+            <p class="edit-restore-note">Bu mesaj silinmis. Geri yuklemek icin asagidaki butona tiklayin.</p>
+            <form method="post" class="edit-restore-form">
+                <input type="hidden" name="_token" value="{{ csrf_token('restore_post_' ~ post.pid) }}">
+                <input type="hidden" name="restore" value="1">
+                <button type="submit" class="btn-primary">Mesaji Geri Yukle</button>
+                <a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}" class="btn-back">Vazgec</a>
+            </form>
+        {% else %}
+        <form method="post" id="edit-form" onsubmit="return syncEditor()">
+            <div class="form-group">
+                <label>Mesaj</label>
+                <div id="editor"></div>
+                <input type="hidden" name="message" id="hidden_message">
+            </div>
+            <div class="btn-row">
+                <button type="submit" class="btn-primary">Degisiklikleri Kaydet</button>
+                <a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}" class="btn-back">Vazgec</a>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {% if not is_soft_deleted|default(false) %}
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script>
+        let editor;
+        document.addEventListener('DOMContentLoaded', function() {
+            editor = new toastui.Editor({
+                el: document.querySelector('#editor'),
+                height: '300px',
+                initialEditType: 'wysiwyg',
+                previewStyle: 'vertical',
+                initialValue: {{ post.message|json_encode|raw }}
+            });
+        });
+
+        function syncEditor() {
+            if (editor) {
+                document.getElementById('hidden_message').value = editor.getHTML();
+            }
+            return true;
+        }
+    </script>
+    {% endif %}
+{% endblock %}

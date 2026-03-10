@@ -1,0 +1,65 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Konu Abonelikleri — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+            Konu Abonelikleri
+        </div>
+    </div>
+
+    <div class="cp-container">
+        <div class="cp-menu">
+            <h3>Profil</h3>
+            <ul>
+                <li><a href="{{ path('app_usercp') }}">Genel Bakis</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'profile'}) }}">Profil Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'editsig'}) }}">Imza Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'options'}) }}">Secenekleri Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'subscriptions'}) }}" class="active">Konu Abonelikleri</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'drafts'}) }}">Taslaklar</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'password'}) }}">Sifre Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'email'}) }}">E-posta Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'avatar'}) }}">Avatar Yukle</a></li>
+            </ul>
+        </div>
+        <div class="cp-content">
+            <h1>Konu Abonelikleri</h1>
+
+            {% if threads is empty %}
+                <div class="no-subs">
+                    Abone oldugunuz konu bulunmuyor. Bir konu icindeyken "Konuya Abone Ol" butonuna tiklayarak abone olabilirsiniz.
+                </div>
+            {% else %}
+                <table class="subs-table">
+                    <thead>
+                        <tr>
+                            <th>Konu</th>
+                            <th>Son Mesaj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in threads %}
+                            <tr>
+                                <td>
+                                    {% set thread_last = t.lastpost|default(t.dateline) %}
+                                    <a href="{{ path('app_thread_show', {tid: t.tid}) }}" class="{{ thread_last > last_visit ? 'unread' : '' }}">
+                                        {{ t.subject }}
+                                    </a>
+                                </td>
+                                <td class="{{ (t.lastpost|default(t.dateline)) > last_visit ? 'unread' : '' }}">
+                                    {{ (t.lastpost|default(t.dateline))|date('d.m.Y H:i', 'Europe/Istanbul') }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

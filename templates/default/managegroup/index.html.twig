@@ -1,0 +1,63 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}{% if group %}{{ group.title }} — Grup Yönetimi{% else %}Grup Yönetimi{% endif %} — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_usercp', {action: 'usergroups'}) }}">Üye Grupları</a>
+        {% if group %}&raquo; {{ group.title }}{% endif %}
+    </div>
+
+    {% if error %}
+    <p class="tborder trow1">{{ error }}</p>
+    <p><a href="{{ path('app_usercp', {action: 'usergroups'}) }}">Üye gruplarına dön</a></p>
+    {% elseif group %}
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>{{ group.title }} — Grup yönetimi</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    <a href="{{ path('app_managegroup', {gid: gid}) }}">Özet</a> |
+                    <a href="{{ path('app_managegroup', {gid: gid, action: 'joinrequests'}) }}">Katılım istekleri</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="tcat">Katılım istekleri ({{ join_requests|length }})</td>
+            </tr>
+            {% if join_requests is empty %}
+            <tr>
+                <td class="trow1"><em>Bekleyen istek yok.</em></td>
+            </tr>
+            {% else %}
+            {% for r in join_requests %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    <a href="{{ path('app_member', {action: 'profile', uid: r.uid}) }}">{{ r.username }}</a>
+                    — {{ r.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}
+                    <form method="post" action="{{ path('app_managegroup', {gid: gid, action: 'joinrequests'}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('managegroup_join') }}">
+                        <input type="hidden" name="uid" value="{{ r.uid }}">
+                        <input type="hidden" name="accept" value="1">
+                        <button type="submit" class="btn btn-sm btn-success">Kabul</button>
+                    </form>
+                    <form method="post" action="{{ path('app_managegroup', {gid: gid, action: 'joinrequests'}) }}" class="d-inline">
+                        <input type="hidden" name="_token" value="{{ csrf_token('managegroup_join') }}">
+                        <input type="hidden" name="uid" value="{{ r.uid }}">
+                        <input type="hidden" name="accept" value="0">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Reddet</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Spam Kullanıcı İşlemi — Mod CP — SymBB{% endblock %}
+
+{% block body %}
+<div class="modcp-container">
+    <h1 class="modcp-title">Spam Kullanıcı İşlemi</h1>
+    <p><a href="{{ path('app_modcp') }}">« Mod paneline dön</a></p>
+
+    <form method="get" action="{{ path('app_modcp', {action: 'purgespammer'}) }}" class="mb-3">
+        <input type="hidden" name="action" value="purgespammer">
+        <label>Kullanıcı ID:</label>
+        <input type="number" name="uid" value="{{ user ? user.uid : '' }}" min="1" placeholder="UID">
+        <button type="submit" class="btn btn-secondary">Yükle</button>
+    </form>
+
+    {% if user %}
+    <p><strong>{{ user.username }}</strong> (UID: {{ user.uid }}) — Bu kullanıcının tüm konu ve mesajları silinecek.</p>
+    <form method="post" action="{{ path('app_modcp', {action: 'purgespammer'}) }}" onsubmit="return confirm('Bu işlem geri alınamaz. Devam etmek istiyor musunuz?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('modcp_purge') }}">
+        <input type="hidden" name="action" value="purgespammer">
+        <input type="hidden" name="uid" value="{{ user.uid }}">
+        <label><input type="checkbox" name="ban" value="1" checked> Kullanıcıyı banla (usergroup=7)</label>
+        <br>
+        <button type="submit" class="btn btn-danger">Spam İşlemini Uygula</button>
+    </form>
+    {% else %}
+    <p>İşlem yapmak için yukarıdan bir kullanıcı ID girin.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+/* Curves UI - css3.css (border-radius, form controls) */
+@media (min-width: 1200px) {
+    .container-md {
+        max-width: 1275px;
+    }
+}
+
+.tborder {
+    border-radius: 7px;
+}
+
+.tborder tbody tr:last-child > td:first-child {
+    border-bottom-left-radius: 6px;
+}
+
+.tborder tbody tr:last-child > td:last-child {
+    border-bottom-right-radius: 6px;
+}
+
+.thead {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+input.button,
+input.textbox,
+select,
+textarea,
+blockquote,
+.codeblock,
+fieldset,
+.postbit_buttons > a,
+a.button {
+    border-radius: 6px;
+}
+
+.pagination a {
+    border-radius: 6px;
+}
+
+.form-control {
+    border-radius: 3px !important;
+    border-color: #ccc !important;
+}
+
+.form-select {
+    border-radius: 3px;
+    border-color: #ccc !important;
+}
+
+.btn {
+    border-radius: 3px !important;
+}
+
+.btn-sm {
+    border-radius: 3px !important;
+}
+
+.progress {
+    border-radius: 3px;
+}
+
+.card {
+    border-radius: 4px;
+}

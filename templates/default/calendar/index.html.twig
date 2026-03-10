@@ -1,0 +1,26 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Takvim — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo; Takvim
+    </div>
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Takvim — {{ month }}/{{ year }}</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    <p>Takvim görünümü burada listelenecek. Olaylar ve doğum günleri için veritabanı entegrasyonu eklenebilir.</p>
+                    <p><a href="{{ path('app_board_index') }}">Ana sayfaya dön</a></p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

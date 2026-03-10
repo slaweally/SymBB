@@ -1,0 +1,53 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Mod Paneli — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="modcp-container">
+        <h1 class="modcp-title">Mod Paneli</h1>
+
+        {# Raporlar #}
+        <div class="modcp-section">
+            <h2>Bekleyen Raporlar</h2>
+            {% if reports is empty %}
+                <p class="modcp-empty">Bekleyen rapor yok.</p>
+            {% else %}
+                {% for report in reports %}
+                    <div class="report-row">
+                        <div class="report-info">
+                            <strong>Mesaj #{{ report.cid }}</strong> — {{ report.reason|slice(0, 100) }}{% if report.reason|length > 100 %}...{% endif %}
+                            <div class="report-meta">Raporlayan UID: {{ report.uid }} | {{ report.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</div>
+                        </div>
+                        <form method="post" action="{{ path('app_modcp', {action: 'resolve_report'}) }}" class="modcp-inline-form">
+                            <input type="hidden" name="_token" value="{{ csrf_token('modcp_resolve_' ~ report.rid) }}">
+                            <input type="hidden" name="rid" value="{{ report.rid }}">
+                            <button type="submit" class="btn btn-primary">İşlemi Tamamla</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="modcp-section">
+            <h2>Mod Araçları</h2>
+            <ul>
+                <li><a href="{{ path('app_modcp', {action: 'ipsearch'}) }}">IP Arama</a></li>
+                <li><a href="{{ path('app_modcp', {action: 'merge'}) }}">Konuları Birleştir</a></li>
+                <li><a href="{{ path('app_modcp', {action: 'split'}) }}">Konuyu Ayrıştır</a> (tid ile: ?action=split&tid=XXX)</li>
+                <li><a href="{{ path('app_modcp', {action: 'purgespammer'}) }}">Spam Kullanıcı İşlemi</a></li>
+            </ul>
+        </div>
+
+        {# Hızlı Ban #}
+        <div class="modcp-section">
+            <h2>Hızlı Ban (Banning)</h2>
+            <form method="post" action="{{ path('app_modcp', {action: 'ban'}) }}" class="ban-form">
+                <input type="hidden" name="_token" value="{{ csrf_token('modcp_ban') }}">
+                <input type="text" name="target" placeholder="Kullanıcı ID veya adı" required>
+                <button type="submit" class="btn btn-danger">Banla (usergroup=7)</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

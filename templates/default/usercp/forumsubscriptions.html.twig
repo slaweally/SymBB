@@ -1,0 +1,47 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Forum Abonelikleri — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+        Forum Abonelikleri
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Forum abonelikleriniz ({{ forums|length }})</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if forums is empty %}
+            <tr>
+                <td class="trow1"><em>Forum aboneligi yok.</em></td>
+            </tr>
+            {% else %}
+            <form method="post" action="{{ path('app_usercp', {action: 'do_forumsubscriptions'}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('forumsubscriptions') }}">
+                {% for f in forums %}
+                <tr>
+                    <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                        <label class="d-flex align-items-center">
+                            <input type="checkbox" name="check[]" value="{{ f.fid }}">
+                            <a href="{{ path('app_forum_display', {fid: f.fid}) }}" class="ms-2">{{ f.name }}</a>
+                        </label>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td class="tfoot">
+                        <button type="submit" class="btn btn-danger btn-sm">Seçilen abonelikleri kaldır</button>
+                    </td>
+                </tr>
+            </form>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

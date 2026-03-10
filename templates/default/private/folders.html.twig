@@ -1,0 +1,63 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}PM Klasörleri — SymBB{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_private_message') }}">Özel Mesajlar</a> &raquo;
+            Klasör Yönetimi
+        </div>
+    </div>
+
+    <div class="pm-container">
+        <div class="pm-menu">
+            <h3>Mesajlar</h3>
+            <ul>
+                <li><a href="{{ path('app_private_message') }}">Gelen Kutusu</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'send'}) }}">Yeni Mesaj Gönder</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'tracking'}) }}">Mesaj Takibi</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'folders'}) }}" class="active">Klasör Yönetimi</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'empty'}) }}">Klasör Boşalt</a></li>
+            </ul>
+        </div>
+        <div class="pm-content">
+            <h1>Klasör Yönetimi</h1>
+
+            <form method="post" action="{{ path('app_private_message', {action: 'do_folders'}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('pm_folders') }}">
+                <table class="pm-table">
+                    <thead>
+                        <tr>
+                            <th>Klasör Adı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in folders %}
+                            <tr>
+                                <td>
+                                    {% if f.id < 5 %}
+                                        <input type="text" name="folder[{{ f.id }}]" value="{{ f.name }}" class="pm-folder-input">
+                                        <span class="pm-folder-hint">(varsayılan, silinemez)</span>
+                                    {% else %}
+                                        <input type="text" name="folder[{{ f.id }}]" value="{{ f.name }}" class="pm-folder-input">
+                                        <span class="pm-folder-hint">(boş bırakırsanız silinir)</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        {% for i in 1..5 %}
+                            <tr>
+                                <td>
+                                    <input type="text" name="folder[new{{ i }}]" value="" placeholder="Yeni klasör adı" class="pm-folder-input">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" class="btn-primary">Kaydet</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

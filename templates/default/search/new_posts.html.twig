@@ -1,0 +1,49 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Yeni Mesajlar — SymBB{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ path('app_board_index') }}" class="btn-link">Ana Sayfa</a> &raquo;
+    <a href="{{ path('app_search') }}" class="btn-link">Arama</a> &raquo; Yeni Mesajlar
+{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="forum-header">
+        <h1>Yeni Mesajlar</h1>
+        <p>{% if app.user %}Son aktif olduğunuz tarihten sonraki konular{% else %}Son 24 saat içindeki konular{% endif %}</p>
+    </div>
+
+    {% if threads is empty %}
+        <div class="empty-message">
+            <div class="icon">✓</div>
+            <strong>Bütün konuları okudunuz</strong>
+            <p class="text-muted">Okunmamış yeni konu bulunmuyor.</p>
+        </div>
+    {% else %}
+        <div class="thread-list">
+            {% for thread in threads %}
+                <a href="{{ path('app_thread_show', {tid: thread.tid}) }}" class="thread-row">
+                    <div class="thread-info">
+                        <div class="thread-subject">{{ thread.subject }}</div>
+                        <div class="thread-author">{{ thread.username }} — {{ thread.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</div>
+                    </div>
+                    <div class="thread-stats">
+                        <div>
+                            <span class="thread-stat-value">{{ thread.replies|number_format(0, ',', '.') }}</span>
+                            <span class="thread-stat-label">Yanıt</span>
+                        </div>
+                        <div>
+                            <span class="thread-stat-value">{{ thread.views|number_format(0, ',', '.') }}</span>
+                            <span class="thread-stat-label">Görüntülenme</span>
+                        </div>
+                    </div>
+                    <div class="thread-date">
+                        {{ thread.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

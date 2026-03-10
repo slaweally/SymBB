@@ -1,0 +1,48 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Kimler Çevrimiçi — SymBB{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        Kimler Çevrimiçi
+    </div>
+
+    <div class="online-page">
+        <h1>Kimler Çevrimiçi</h1>
+        <p class="online-desc">Son 15 dakika içinde aktif kullanıcılar.</p>
+
+        <table class="online-table tborder">
+            <thead>
+                <tr class="thead">
+                    <th>Kullanıcı</th>
+                    <th>Konum</th>
+                    <th>Son Aktivite</th>
+                    {% if can_view_ip %}<th>IP</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr class="{{ loop.index is odd ? 'trow1' : 'trow2' }}">
+                    <td>
+                        {% if u.uid > 0 %}
+                            <a href="{{ path('app_member', {action: 'profile', uid: u.uid}) }}">{{ u.username }}{% if u.invisible == 1 and can_view_invisible %}*{% endif %}</a>
+                        {% else %}
+                            {{ u.username }}
+                        {% endif %}
+                    </td>
+                    <td>{{ u.location }}</td>
+                    <td>{{ u.lastactive|date('d.m.Y H:i', 'Europe/Istanbul') }}</td>
+                    {% if can_view_ip %}
+                    <td>{{ u.ip ?? '-' }}</td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr class="trow1">
+                    <td colspan="{{ can_view_ip ? 4 : 3 }}" class="empty-message">Şu anda çevrimiçi kullanıcı yok.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

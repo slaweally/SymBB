@@ -1,0 +1,84 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Mesaj Takibi — SymBB{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_private_message') }}">Özel Mesajlar</a> &raquo;
+            Mesaj Takibi
+        </div>
+    </div>
+
+    <div class="pm-container">
+        <div class="pm-menu">
+            <h3>Mesajlar</h3>
+            <ul>
+                <li><a href="{{ path('app_private_message') }}">Gelen Kutusu</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'send'}) }}">Yeni Mesaj Gönder</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'tracking'}) }}" class="active">Mesaj Takibi</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'folders'}) }}">Klasör Yönetimi</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'empty'}) }}">Klasör Boşalt</a></li>
+            </ul>
+        </div>
+        <div class="pm-content">
+            <h1>Mesaj Takibi</h1>
+            <p>Gönderdiğiniz mesajların okunma durumu.</p>
+
+            {% if read_messages|length > 0 %}
+                <h2>Okunan Mesajlar</h2>
+                <table class="pm-table">
+                    <thead>
+                        <tr>
+                            <th>Alıcı</th>
+                            <th>Konu</th>
+                            <th>Okunma Tarihi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pm in read_messages %}
+                            <tr>
+                                <td>{{ pm.toUser ? (pm.toUser|format_name) : 'Bilinmeyen' }}</td>
+                                <td><a href="{{ path('app_private_message', {action: 'read', pmid: pm.pmid}) }}">{{ pm.subject }}</a></td>
+                                <td>{{ pm.readtime ? (pm.readtime|date('d.m.Y H:i', 'Europe/Istanbul')) : '—' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            {% if unread_messages|length > 0 %}
+                <h2>Okunmamış Mesajlar</h2>
+                <form method="post" action="{{ path('app_private_message', {action: 'do_stoptracking'}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('pm_stoptracking') }}">
+                    <table class="pm-table">
+                        <thead>
+                            <tr>
+                                <th>Alıcı</th>
+                                <th>Konu</th>
+                                <th>Gönderim Tarihi</th>
+                                <th>İptal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pm in unread_messages %}
+                                <tr>
+                                    <td>{{ pm.toUser ? (pm.toUser|format_name) : 'Bilinmeyen' }}</td>
+                                    <td><a href="{{ path('app_private_message', {action: 'read', pmid: pm.pmid}) }}">{{ pm.subject }}</a></td>
+                                    <td>{{ pm.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</td>
+                                    <td><input type="checkbox" name="pmid[]" value="{{ pm.pmid }}" title="Okunmamış mesajı iptal et"></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn-primary">Seçilen Okunmamış Mesajları İptal Et</button>
+                </form>
+            {% endif %}
+
+            {% if read_messages|length == 0 and unread_messages|length == 0 %}
+                <p class="pm-empty">Takip edilecek mesajınız yok.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}{{ announcement.subject }} — Duyuru — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        {% if forum %}
+        <a href="{{ path('app_forum_display', {fid: forum.fid}) }}">{{ forum.name }}</a> &raquo;
+        {% endif %}
+        Duyuru
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>{{ announcement.subject }}</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    {% if announcement.username %}
+                    <p class="text-muted small">Yazan: {{ announcement.username }} — {{ announcement.startdate|date('d.m.Y H:i', 'Europe/Istanbul') }}</p>
+                    {% endif %}
+                    <div class="announcement-message">
+                        {{ announcement.message|raw|nl2br }}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

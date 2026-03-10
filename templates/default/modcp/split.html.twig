@@ -1,0 +1,49 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}{% if thread %}Konuyu Ayrıştır: {{ thread.subject }}{% else %}Konuyu Ayrıştır{% endif %} — Mod CP — SymBB{% endblock %}
+
+{% block body %}
+<div class="modcp-container">
+    <h1 class="modcp-title">Konuyu Ayrıştır</h1>
+    <p><a href="{{ path('app_modcp') }}">« Mod paneline dön</a></p>
+
+    {% if thread is null %}
+    <p>Konu ID gerekli: <code>modcp.php?action=split&tid=XXX</code></p>
+    {% else %}
+    <p>Konu: <a href="{{ path('app_thread_show', {id: thread.tid}) }}">{{ thread.subject }}</a></p>
+    <form method="post" action="{{ path('app_modcp', {action: 'split'}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('modcp_split') }}">
+        <input type="hidden" name="action" value="split">
+        <input type="hidden" name="tid" value="{{ thread.tid }}">
+        <table class="tborder" style="width: 100%;">
+            <thead>
+                <tr>
+                    <td class="thead">Seç</td>
+                    <td class="thead">Mesaj</td>
+                    <td class="thead">Yazar</td>
+                    <td class="thead">Tarih</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for p in posts %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}"><input type="checkbox" name="pids[]" value="{{ p.pid }}"></td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">{{ p.subject|slice(0, 50) }}{% if p.subject|length > 50 %}...{% endif %}</td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">{{ p.username }}</td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">{{ p.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            <tr>
+                <td class="tfoot" colspan="4">
+                    Yeni konu başlığı: <input type="text" name="newsubject" required placeholder="[Ayrılan] ..." style="width: 300px;">
+                    <button type="submit" class="btn btn-primary">Ayrıştır</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

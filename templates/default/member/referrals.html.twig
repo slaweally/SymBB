@@ -1,0 +1,55 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Referanslar — {{ user.username }} — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_member', {action: 'profile', uid: user.uid}) }}">{{ user.username }}</a> &raquo;
+        Referanslar
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>{{ user.username }} — Referanslar ({{ referral_count }})</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if referrals is empty %}
+            <tr>
+                <td class="trow1"><em>Bu kullanıcıya ait referans bulunmuyor.</em></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="tcat" style="width: 60%;">Kullanıcı</td>
+                <td class="tcat">Kayıt Tarihi</td>
+            </tr>
+            {% for ref in referrals %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    <a href="{{ path('app_member', {action: 'profile', uid: ref.uid}) }}">{{ ref.username }}</a>
+                </td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    {{ ref.regdate|date('d.m.Y H:i', 'Europe/Istanbul') }}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <div class="pagination mt-2">
+        {% if current_page > 1 %}
+            <a href="{{ path('app_member', {action: 'referrals', uid: user.uid, page: current_page - 1}) }}">&laquo; Önceki</a>
+        {% endif %}
+        <span class="mx-2">Sayfa {{ current_page }} / {{ total_pages }}</span>
+        {% if current_page < total_pages %}
+            <a href="{{ path('app_member', {action: 'referrals', uid: user.uid, page: current_page + 1}) }}">Sonraki &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

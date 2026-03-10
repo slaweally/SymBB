@@ -1,0 +1,74 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Ozel Mesajlar — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            Ozel Mesajlar
+        </div>
+    </div>
+
+    <div class="pm-container">
+        <div class="pm-menu">
+            <h3>Mesajlar</h3>
+            <ul>
+                <li><a href="{{ path('app_private_message') }}" class="{{ current_fid|default(0) == 0 ? 'active' : '' }}">Gelen Kutusu</a></li>
+                <li><a href="{{ path('app_private_message', {fid: 1}) }}" class="{{ current_fid|default(null) == 1 ? 'active' : '' }}">Okunmamış</a></li>
+                <li><a href="{{ path('app_private_message', {fid: 2}) }}" class="{{ current_fid|default(null) == 2 ? 'active' : '' }}">Gönderilenler</a></li>
+                <li><a href="{{ path('app_private_message', {fid: 3}) }}" class="{{ current_fid|default(null) == 3 ? 'active' : '' }}">Taslaklar</a></li>
+                <li><a href="{{ path('app_private_message', {fid: 4}) }}" class="{{ current_fid|default(null) == 4 ? 'active' : '' }}">Çöp Kutusu</a></li>
+                {% for f in folders|default([]) %}
+                    {% if f.id >= 5 %}
+                        <li><a href="{{ path('app_private_message', {fid: f.id}) }}" class="{{ current_fid|default(null) == f.id ? 'active' : '' }}">{{ f.name }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                <li><a href="{{ path('app_private_message', {action: 'send'}) }}">Yeni Mesaj Gönder</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'tracking'}) }}">Mesaj Takibi</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'folders'}) }}">Klasör Yönetimi</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'empty'}) }}">Klasör Boşalt</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'export'}) }}">Dışa Aktar</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'advanced_search'}) }}">Gelişmiş Arama</a></li>
+            </ul>
+        </div>
+        <div class="pm-content">
+            <h1>{{ folder_title|default('Gelen Kutusu') }}</h1>
+
+            {% for flash in app.flashes('success') %}
+                <div class="pm-success-banner">
+                    {{ flash }}
+                </div>
+            {% endfor %}
+
+            {% if messages|length > 0 %}
+                <table class="pm-table">
+                    <thead>
+                        <tr>
+                            <th>Konu</th>
+                            <th width="20%">{{ current_fid|default(0) == 2 ? 'Alıcı' : 'Gönderen' }}</th>
+                            <th width="25%">Tarih</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pm in messages %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('app_private_message', {action: 'read', pmid: pm.pmid}) }}" class="{{ pm.status == 0 ? 'status-unread' : '' }}">
+                                        {{ pm.subject }}
+                                    </a>
+                                </td>
+                                <td>{{ current_fid|default(0) == 2 ? (pm.toUser ? (pm.toUser|format_name) : 'Bilinmeyen') : (pm.fromUser ? (pm.fromUser|format_name) : 'Bilinmeyen') }}</td>
+                                <td style="color:#888; font-size:.85rem;">{{ pm.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="pm-empty">Gelen kutunuz bostur.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

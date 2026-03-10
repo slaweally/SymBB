@@ -1,0 +1,8 @@
+# TekBB theme images - MyBB uyumluluk için
+# Bu klasöre ekleyin:
+# - logo.png (önerilen: 200x50 px)
+# - fav.png (favicon, 16x16 veya 32x32)
+# 
+# themes/default/images/ klasörüne (tek değil):
+# - folders_sprite.png (thread status ikonları - MyBB default theme'den)
+# - star_rating.png (yıldız puanlama - MyBB default theme'den)

@@ -1,0 +1,28 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Yardım — SymBB{% endblock %}
+
+{% block body %}
+<div class="card">
+    <div class="card-header thead">
+        <h5 class="mb-0">Yardım</h5>
+    </div>
+    <div class="card-body">
+        <p>SymBB forum yazılımına hoş geldiniz.</p>
+        <p>Bu sayfa yardım içeriği ile güncellenecektir.</p>
+        <p>Yardım belgelerinde arama:</p>
+        <form method="post" action="{{ path('app_misc', {action: 'do_helpsearch'}) }}" class="mb-3">
+            <input type="hidden" name="_token" value="{{ csrf_token('do_helpsearch') }}">
+            <input type="text" name="keywords" class="form-control d-inline-block w-auto" placeholder="Anahtar kelime" required>
+            <label class="d-inline-block ms-2"><input type="checkbox" name="name" value="1"> İsimde ara</label>
+            <label class="d-inline-block ms-2"><input type="checkbox" name="document" value="1"> İçerikte ara</label>
+            <button type="submit" class="btn btn-primary btn-sm ms-2">Ara</button>
+        </form>
+        <p>Bu forumdan bilgisayarınıza kaydedilen çerezleri temizlemek için
+        <form method="post" action="{{ path('app_misc', {action: 'clearcookies'}) }}" class="d-inline">
+            <input type="hidden" name="_token" value="{{ csrf_token('clearcookies') }}">
+            <button type="submit" class="btn-link p-0">buraya</button>
+        </form> tıklayınız.</p>
+    </div>
+</div>
+{% endblock %}

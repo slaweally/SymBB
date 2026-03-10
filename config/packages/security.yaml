@@ -1,0 +1,35 @@
+security:
+    password_hashers:
+        App\Entity\User:
+            id: App\Security\MyBBPasswordHasher
+
+    providers:
+        mybb_user_provider:
+            entity:
+                class: App\Entity\User
+                property: username
+
+    firewalls:
+        dev:
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+        main:
+            lazy: true
+            provider: mybb_user_provider
+            custom_authenticators:
+                - App\Security\MyBBAuthenticator
+                - App\Security\MyBBLoginAuthenticator
+            entry_point: App\Security\MyBBLoginAuthenticator
+            logout:
+                path: app_logout
+                target: app_board_index
+
+    access_control:
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }
+
+when@test:
+    security:
+        password_hashers:
+            App\Entity\User:
+                id: App\Security\MyBBPasswordHasher

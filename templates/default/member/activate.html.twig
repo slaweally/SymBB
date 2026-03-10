@@ -1,0 +1,25 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Hesap Aktivasyonu — SymBB{% endblock %}
+
+{% block body %}
+<div class="auth-card">
+    <h1>Hesap Aktivasyonu</h1>
+    <p>Aktivasyon linkinizdeki kodu girin veya e-postanizdaki linke tiklayin.</p>
+    <form method="get" action="{{ path('app_member', {action: 'activate'}) }}">
+        <div class="form-group">
+            <label for="uid">Kullanici ID</label>
+            <input type="number" name="uid" id="uid" value="{{ uid|default('') }}" class="form-control" placeholder="Opsiyonel">
+        </div>
+        <div class="form-group">
+            <label for="username">Kullanici Adi</label>
+            <input type="text" name="username" id="username" value="{{ username|default('') }}" class="form-control" placeholder="Opsiyonel">
+        </div>
+        <div class="form-group">
+            <label for="code">Aktivasyon Kodu</label>
+            <input type="text" name="code" id="code" value="{{ code|default('') }}" class="form-control" required>
+        </div>
+        <button type="submit" class="btn-primary">Aktiflestir</button>
+    </form>
+</div>
+{% endblock %}

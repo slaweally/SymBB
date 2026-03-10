@@ -1,0 +1,39 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Kayit Ol — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="auth-card">
+        <h1>Kayit Ol</h1>
+
+        {% if error %}
+            <div class="auth-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post">
+            <div class="form-group">
+                <label for="username">Kullanici Adi</label>
+                <input type="text" id="username" name="username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Sifre</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="password_confirm">Sifre Tekrar</label>
+                <input type="password" id="password_confirm" name="password_confirm" required>
+            </div>
+            <button type="submit" class="btn-primary">Kayit Ol</button>
+        </form>
+
+        <div class="auth-footer">
+            Zaten hesabin var mi? <a href="{{ path('app_login') }}">Giris Yap</a>
+        </div>
+    </div>
+{% endblock %}

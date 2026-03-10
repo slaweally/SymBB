@@ -1,0 +1,75 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Ekler — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+        Ekler
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Ekleriniz ({{ total }})</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if attachments is empty %}
+            <tr>
+                <td class="trow1"><em>Henüz ek yok.</em></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="tcat">Dosya</td>
+                <td class="tcat">Konu / Mesaj</td>
+                <td class="tcat">Boyut / İndirme</td>
+                <td class="tcat">İşlem</td>
+            </tr>
+            <form method="post" action="{{ path('app_usercp', {action: 'do_attachments'}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('attachments') }}">
+                {% for a in attachments %}
+                <tr>
+                    <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                        <a href="{{ path('app_attachment_download', {aid: a.aid}) }}">{{ a.attachname }}</a>
+                    </td>
+                    <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                        {% if a.post and a.post.thread %}
+                        <a href="{{ path('app_thread_show', {tid: a.post.thread.tid}) }}">{{ a.post.subject|default('(Konu)') }}</a>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                        {{ (a.filesize / 1024)|number_format(1) }} KB — {{ a.downloads }} indirme
+                    </td>
+                    <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                        <input type="checkbox" name="attachments[]" value="{{ a.aid }}">
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td class="tfoot" colspan="4">
+                        <button type="submit" class="btn btn-danger btn-sm">Seçilenleri sil</button>
+                    </td>
+                </tr>
+            </form>
+            {% endif %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <div class="pagination mt-2">
+        {% if current_page > 1 %}
+            <a href="{{ path('app_usercp', {action: 'attachments', page: current_page - 1}) }}">&laquo; Önceki</a>
+        {% endif %}
+        <span class="mx-2">Sayfa {{ current_page }} / {{ total_pages }}</span>
+        {% if current_page < total_pages %}
+            <a href="{{ path('app_usercp', {action: 'attachments', page: current_page + 1}) }}">Sonraki &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

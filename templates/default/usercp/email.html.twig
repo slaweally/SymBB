@@ -1,0 +1,41 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}E-posta Degistir — Kontrol Paneli — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="cp-container">
+        <div class="cp-menu">
+            <h3>Profil</h3>
+            <ul>
+                <li><a href="{{ path('app_usercp') }}">Genel Bakis</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'profile'}) }}">Profil Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'editsig'}) }}">Imza Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'options'}) }}">Secenekleri Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'subscriptions'}) }}">Konu Abonelikleri</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'drafts'}) }}">Taslaklar</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'password'}) }}">Sifre Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'email'}) }}" class="active">E-posta Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'avatar'}) }}">Avatar Yukle</a></li>
+            </ul>
+        </div>
+        <div class="cp-content">
+            <h1>E-posta Degistir</h1>
+            {% if error %}
+                <div class="alert-error">{{ error }}</div>
+            {% endif %}
+            <form method="post">
+                <div class="form-group">
+                    <label for="email">Yeni E-posta Adresi</label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mevcut Sifre (Dogrulama)</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn-primary">E-postayi Guncelle</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

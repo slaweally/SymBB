@@ -1,0 +1,17 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}{{ rulestitle }} — SymBB{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ path('app_board_index') }}" style="color:#4fc3f7; text-decoration:none;">Ana Sayfa</a> &raquo;
+    <a href="{{ path('app_forum_display', {fid: forum.fid}) }}" style="color:#4fc3f7; text-decoration:none;">{{ forum.name }}</a> &raquo; {{ rulestitle }}
+{% endblock %}
+
+{% block body %}
+    <div class="misc-rules" style="background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,.06); padding:24px;">
+        <h1 style="font-size:1.4rem; color:#1a1a2e; margin-bottom:16px;">{{ rulestitle }}</h1>
+        <div class="rules-content" style="line-height:1.7; color:#333;">
+            {{ rules|parse_message }}
+        </div>
+    </div>
+{% endblock %}

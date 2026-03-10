@@ -1,0 +1,28 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Anket Oluştur — {{ thread.subject }}{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px; margin: 0 auto;">
+        <h1>Anket Oluştur</h1>
+        <p>Konu: <a href="{{ path('app_thread_show', {tid: thread.tid}) }}">{{ thread.subject }}</a></p>
+
+        <form method="post" action="{{ path('app_polls', {action: 'do_newpoll'}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('poll_newpoll') }}">
+            <input type="hidden" name="tid" value="{{ thread.tid }}">
+
+            <div style="margin-bottom: 16px;">
+                <label for="question">Soru:</label>
+                <input type="text" id="question" name="question" required style="width:100%; padding:8px;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label for="options">Seçenekler (virgülle ayırın):</label>
+                <input type="text" id="options" name="options" placeholder="Seçenek 1, Seçenek 2, Seçenek 3" required style="width:100%; padding:8px;">
+            </div>
+
+            <button type="submit">Anket Oluştur</button>
+            <a href="{{ path('app_thread_show', {tid: thread.tid}) }}" style="margin-left:12px;">İptal</a>
+        </form>
+    </div>
+{% endblock %}

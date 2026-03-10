@@ -1,0 +1,69 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Gelişmiş Arama — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_search') }}">Arama</a> &raquo; Gelişmiş Arama
+    </div>
+
+    <div class="search-advanced">
+        <h1>Gelişmiş Arama</h1>
+
+        <form method="post" action="{{ path('app_search', {action: 'do_advanced'}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('advanced_search') }}">
+
+            <div class="form-group">
+                <label for="keywords">Anahtar Kelime</label>
+                <input type="text" id="keywords" name="keywords" class="form-control" placeholder="Aranacak kelime(ler)...">
+                <div class="form-group">
+                    <label class="form-check"><input type="radio" name="match_type" value="and" checked> Tüm kelimeler (AND)</label>
+                    <label class="form-check"><input type="radio" name="match_type" value="or"> Herhangi bir kelime (OR)</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="author">Yazar Adı</label>
+                <input type="text" id="author" name="author" class="form-control" placeholder="Kullanıcı adı">
+                <label class="form-check">
+                    <input type="checkbox" name="exact_author" value="1"> Tam eşleşme
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="forums">Forum Filtresi</label>
+                <select id="forums" name="forums[]" class="form-control forum-select" multiple size="8">
+                    {% for cat in forum_data.categories %}
+                        <optgroup label="{{ cat.name }}">
+                            {% for forum in cat.forums %}
+                                <option value="{{ forum.fid }}">{{ forum.name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+                <small class="form-hint-small">Birden fazla forum seçmek için Ctrl/Cmd tuşuna basılı tutun.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="days">Son X Gün</label>
+                <select id="days" name="days" class="form-control">
+                    <option value="0">Tüm zamanlar</option>
+                    <option value="1">Son 1 gün</option>
+                    <option value="7">Son 7 gün</option>
+                    <option value="14">Son 14 gün</option>
+                    <option value="30">Son 30 gün</option>
+                    <option value="90">Son 90 gün</option>
+                </select>
+            </div>
+
+            <button type="submit" class="search-btn">Ara</button>
+        </form>
+
+        <div class="search-links">
+            <a href="{{ path('app_search') }}">← Basit aramaya dön</a>
+        </div>
+    </div>
+{% endblock %}

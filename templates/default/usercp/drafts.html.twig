@@ -1,0 +1,81 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Taslaklar — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+            Taslaklar
+        </div>
+    </div>
+
+    <div class="cp-container">
+        <div class="cp-menu">
+            <h3>Profil</h3>
+            <ul>
+                <li><a href="{{ path('app_usercp') }}">Genel Bakis</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'profile'}) }}">Profil Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'editsig'}) }}">Imza Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'options'}) }}">Secenekleri Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'subscriptions'}) }}">Konu Abonelikleri</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'drafts'}) }}" class="active">Taslaklar</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'password'}) }}">Sifre Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'email'}) }}">E-posta Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'avatar'}) }}">Avatar Yukle</a></li>
+            </ul>
+        </div>
+        <div class="cp-content">
+            <h1>Taslaklar</h1>
+
+            {% if drafts is empty %}
+                <div class="no-drafts">
+                    Kaydettiginiz taslak bulunmuyor. Konu acarken veya yanit yazarken "Taslak Olarak Kaydet" butonuna tiklayarak taslak kaydedebilirsiniz.
+                </div>
+            {% else %}
+                <table class="drafts-table">
+                    <thead>
+                        <tr>
+                            <th>Baslik</th>
+                            <th>Tur</th>
+                            <th>Konu / Forum</th>
+                            <th>Tarih</th>
+                            <th>Islem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in drafts %}
+                            {% set thread = post.thread %}
+                            {% set is_thread_draft = thread.visible == 2 %}
+                            <tr>
+                                <td>{{ post.subject|default('(Basliksiz)') }}</td>
+                                <td>
+                                    <span class="draft-type">{{ is_thread_draft ? 'Konu taslagi' : 'Yanit taslagi' }}</span>
+                                </td>
+                                <td>
+                                    {% if is_thread_draft %}
+                                        {% set forum = forums[thread.fid] ?? null %}
+                                        {% if forum %}<a href="{{ path('app_forum_display', {fid: forum.fid}) }}">{{ forum.name }}</a>{% else %}Forum #{{ thread.fid }}{% endif %}
+                                    {% else %}
+                                        <a href="{{ path('app_thread_show', {tid: thread.tid}) }}">{{ thread.subject }}</a>
+                                    {% endif %}
+                                </td>
+                                <td>{{ post.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</td>
+                                <td>
+                                    {% if is_thread_draft %}
+                                        <a href="{{ path('app_thread_new', {fid: thread.fid, editdraft: thread.tid}) }}">Duzenle</a>
+                                    {% else %}
+                                        <a href="{{ path('app_thread_reply', {tid: thread.tid, editdraft: post.pid}) }}">Duzenle</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

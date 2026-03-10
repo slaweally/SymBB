@@ -1,0 +1,8 @@
+twig:
+    file_name_pattern: '*.twig'
+    globals:
+        active_theme: 'default'
+
+when@test:
+    twig:
+        strict_variables: true

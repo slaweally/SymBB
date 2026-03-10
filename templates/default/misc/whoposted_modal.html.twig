@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kim Yazdı — {{ thread.subject }}</title>
+    <link rel="stylesheet" href="{{ asset('themes/default/css/global.css') }}">
+</head>
+<body>
+    <h2>Konuya Kim Yazdı</h2>
+    <p>Toplam {{ total_posts|number_format(0, ',', '.') }} mesaj</p>
+    <table class="whoposted-table">
+        <tr><th>Kullanıcı</th><th>Mesaj</th></tr>
+        {% for poster in posters %}
+        <tr>
+            <td>
+                {% if poster.uid %}
+                    <a href="{{ path('app_member', {action: 'profile', uid: poster.uid}) }}" target="_blank">{{ poster.username }}</a>
+                {% else %}
+                    {{ poster.username }}
+                {% endif %}
+            </td>
+            <td>{{ poster.posts|number_format(0, ',', '.') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

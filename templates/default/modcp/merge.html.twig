@@ -1,0 +1,28 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Konuları Birleştir — Mod CP — SymBB{% endblock %}
+
+{% block body %}
+<div class="modcp-container">
+    <h1 class="modcp-title">Konuları Birleştir</h1>
+    <p><a href="{{ path('app_modcp') }}">« Mod paneline dön</a></p>
+
+    <form method="post" action="{{ path('app_modcp', {action: 'merge'}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('modcp_merge') }}">
+        <input type="hidden" name="action" value="merge">
+        <table class="tborder" style="width: 100%;">
+            <tr>
+                <td class="trow1">Kaynak konu ID (birleştirilecek):</td>
+                <td class="trow1"><input type="number" name="mergetid" required min="1" placeholder="tid"></td>
+            </tr>
+            <tr>
+                <td class="trow2">Hedef konu ID (bu konuya taşınacak):</td>
+                <td class="trow2"><input type="number" name="tid" required min="1" placeholder="tid"></td>
+            </tr>
+            <tr>
+                <td class="tfoot" colspan="2"><button type="submit" class="btn btn-primary">Birleştir</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Forumda Ara — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo; Arama
+    </div>
+
+    <div class="search-container">
+        <h1>Forumda Ara</h1>
+        <form method="post" action="{{ path('app_search', {action: 'do_search'}) }}">
+            <div class="form-group">
+                <label for="keywords">Anahtar Kelime</label>
+                <input type="text" id="keywords" name="keywords" class="search-input" placeholder="Aranacak kelimeyi yaziniz..." required autofocus>
+            </div>
+            <button type="submit" class="search-btn">Arama Yap</button>
+        </form>
+        <div class="search-advanced-link">
+            <a href="{{ path('app_search', {action: 'advanced'}) }}">Gelişmiş Arama</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ thread.subject }} — Yazdır</title>
+    <link rel="stylesheet" href="{{ asset('themes/default/css/global.css') }}">
+</head>
+<body class="print-page">
+    <h1>{{ thread.subject }}</h1>
+    <p class="print-meta">
+        {{ thread.username }} — {{ thread.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}
+        | {{ thread.replies + 1 }} mesaj
+    </p>
+    <hr>
+    {% for post in posts %}
+    <div class="print-post">
+        <p class="print-post-header">{{ post.username }} — {{ post.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</p>
+        <div class="print-post-body">
+            {% if post.visible == -1 %}
+                <em class="print-post-deleted">Bu mesaj silindi.</em>
+            {% else %}
+                {{ post.message|parse_message }}
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>

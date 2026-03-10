@@ -1,0 +1,53 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Mesajları Dışa Aktar — SymBB{% endblock %}
+
+{% block body %}
+    <div class="max-w-900">
+        <div class="breadcrumb">
+            <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+            <a href="{{ path('app_private_message') }}">Özel Mesajlar</a> &raquo;
+            Dışa Aktar
+        </div>
+    </div>
+
+    <div class="pm-container">
+        <div class="pm-menu">
+            <h3>Mesajlar</h3>
+            <ul>
+                <li><a href="{{ path('app_private_message') }}">Gelen Kutusu</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'send'}) }}">Yeni Mesaj Gönder</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'tracking'}) }}">Mesaj Takibi</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'folders'}) }}">Klasör Yönetimi</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'empty'}) }}">Klasör Boşalt</a></li>
+                <li><a href="{{ path('app_private_message', {action: 'export'}) }}" class="active">Dışa Aktar</a></li>
+            </ul>
+        </div>
+        <div class="pm-content">
+            <h1>Mesajları Dışa Aktar</h1>
+            <p>Seçtiğiniz klasörlerdeki mesajları metin, CSV veya HTML formatında indirebilirsiniz.</p>
+
+            <form method="post" action="{{ path('app_private_message', {action: 'do_export'}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('pm_export') }}">
+                <p>
+                    <label><strong>Klasörler:</strong></label><br>
+                    <label><input type="checkbox" name="exportfolders[]" value="0"> Tümü</label><br>
+                    {% for f in folders %}
+                        {% if f.id != 1 %}
+                        <label><input type="checkbox" name="exportfolders[]" value="{{ f.id }}"> {{ f.name }}</label><br>
+                        {% else %}
+                        <label><input type="checkbox" name="exportfolders[]" value="1"> {{ f.name }}</label><br>
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                <p>
+                    <label><strong>Format:</strong></label><br>
+                    <label><input type="radio" name="exporttype" value="txt" checked> Metin (.txt)</label>
+                    <label><input type="radio" name="exporttype" value="csv"> CSV</label>
+                    <label><input type="radio" name="exporttype" value="html"> HTML</label>
+                </p>
+                <button type="submit" class="btn-primary">Dışa Aktar</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

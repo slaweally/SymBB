@@ -1,0 +1,101 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Portal — SymBB{% endblock %}
+
+{% block breadcrumb %}
+    <a href="{{ path('app_board_index') }}" class="portal-link">Ana Sayfa</a> &raquo; Portal
+{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="portal-layout">
+        {# Sol kolon: Karşılama bloğu #}
+        <div class="portal-side">
+            <h3>Hoş Geldin</h3>
+            {% if app.user %}
+                <div class="welcome-block">
+                    {% if app.user.avatar and app.user.showavatars == 1 %}
+                        <img src="{{ app.user.avatar starts with 'http' ? app.user.avatar : asset(app.user.avatar) }}" alt="{{ app.user.username }}" class="welcome-avatar">
+                    {% else %}
+                        <div class="welcome-avatar-placeholder">{{ app.user.username|slice(0, 1)|upper }}</div>
+                    {% endif %}
+                    <div class="welcome-name">
+                        <a href="{{ path('app_member', {'action': 'profile', 'uid': app.user.uid}) }}">{{ app.user|format_name }}</a>
+                    </div>
+                </div>
+            {% else %}
+                <form method="post" action="{{ path('app_login') }}" class="login-form">
+                    <input type="text" name="_username" placeholder="Kullanıcı adı" required>
+                    <input type="password" name="_password" placeholder="Şifre" required>
+                    <button type="submit">Giriş Yap</button>
+                    <a href="{{ path('app_register') }}">Kayıt Ol</a>
+                </form>
+            {% endif %}
+        </div>
+
+        {# Orta kolon: Duyurular #}
+        <div>
+            <h2 class="section-title">Duyurular</h2>
+            {% if announcements is empty %}
+                <div class="empty-announcement">Henüz duyuru yok.</div>
+            {% else %}
+                {% for thread in announcements %}
+                    <div class="announcement-card">
+                        <div class="announcement-title">
+                            <a href="{{ path('app_thread_show', {tid: thread.tid}) }}">{{ thread.subject }}</a>
+                        </div>
+                        <div class="announcement-meta">
+                            {% if thread.uid > 0 %}
+                                <a href="{{ path('app_member', {'action': 'profile', 'uid': thread.uid}) }}" class="btn-link">{{ thread.username }}</a>
+                            {% else %}
+                                {{ thread.username }}
+                            {% endif %}
+                            — {{ thread.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}
+                        </div>
+                        <div class="announcement-message">
+                            {% set firstPost = thread.posts|first %}
+                            {% if firstPost %}
+                                {{ firstPost.message|parse_message }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {# Sağ kolon: Board İstatistikleri + Son Tartışmalar #}
+        <div class="portal-side">
+            <h3>Board İstatistikleri</h3>
+            <div class="stats-list">
+                <strong>{{ total_threads|number_format(0, ',', '.') }}</strong> konu<br>
+                <strong>{{ total_posts|number_format(0, ',', '.') }}</strong> mesaj<br>
+                <strong>{{ total_members|number_format(0, ',', '.') }}</strong> üye<br>
+                {% if last_member %}
+                    Son üye: <a href="{{ path('app_member', {'action': 'profile', 'uid': last_member.uid}) }}" class="btn-link">{{ last_member|format_name }}</a>
+                {% endif %}
+            </div>
+
+            <h3 class="section-subtitle">Son Tartışmalar</h3>
+            {% if latest_posts is empty %}
+                <p class="text-muted">Henüz mesaj yok.</p>
+            {% else %}
+                {% for post in latest_posts %}
+                    <div class="latest-post-item">
+                        <a href="{{ path('app_thread_show', {tid: post.thread.tid}) }}#post-{{ post.pid }}">{{ post.subject|length > 40 ? post.subject|slice(0, 40) ~ '...' : post.subject }}</a>
+                        <div class="latest-post-meta">{{ post.username }} — {{ post.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if active_users is not empty %}
+            <h3 class="section-subtitle">Kimler Çevrimiçi</h3>
+            <p class="board-stats-text">
+                {% for user in active_users %}
+                    <a href="{{ path('app_member', {'action': 'profile', 'uid': user.uid}) }}" class="board-stats-text">{{ user|format_name }}</a>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Yardım Arama Sonuçları — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_misc', {action: 'help'}) }}">Yardım</a> &raquo;
+        Arama Sonuçları
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Yardım arama sonuçları{% if keywords %} — "{{ keywords }}"{% endif %}</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if helpdocs is empty %}
+            <tr>
+                <td class="trow1"><em>Sonuç bulunamadı.</em></td>
+            </tr>
+            {% else %}
+            {% for doc in helpdocs %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    <a href="{{ path('app_misc', {action: 'help', hid: doc.hid}) }}"><strong>{{ doc.name }}</strong></a>
+                    {% if doc.helpdoc %}
+                    <div class="small text-muted mt-1">{{ doc.helpdoc|raw }}</div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <div class="pagination mt-2">
+        {% if current_page > 1 %}
+            <a href="{{ path('app_misc', {action: 'helpresults', sid: sid, page: current_page - 1}) }}">&laquo; Önceki</a>
+        {% endif %}
+        <span class="mx-2">Sayfa {{ current_page }} / {{ total_pages }}</span>
+        {% if current_page < total_pages %}
+            <a href="{{ path('app_misc', {action: 'helpresults', sid: sid, page: current_page + 1}) }}">Sonraki &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

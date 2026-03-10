@@ -1,0 +1,55 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Uyarılar — {{ user.username }} — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_member', {action: 'profile', uid: user.uid}) }}">{{ user.username }}</a> &raquo;
+        Uyarılar
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>{{ user.username }} — Uyarı geçmişi ({{ warnings|length }})</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% if warnings is empty %}
+            <tr>
+                <td class="trow1"><em>Uyarı yok.</em></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="tcat">Tarih</td>
+                <td class="tcat">Başlık</td>
+                <td class="tcat">Puan</td>
+                <td class="tcat">Veren</td>
+                {% if is_granted('ROLE_MODERATOR') %}<td class="tcat">İşlem</td>{% endif %}
+            </tr>
+            {% for w in warnings %}
+            <tr>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">{{ w.dateline|date('d.m.Y H:i', 'Europe/Istanbul') }}</td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">{{ w.title }}</td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">{{ w.points }}</td>
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">{{ issuers[w.issuedby] ?? '—' }}</td>
+                {% if is_granted('ROLE_MODERATOR') %}
+                <td class="trow{{ loop.index is odd ? '1' : '2' }}">
+                    <form method="post" action="{{ path('app_warnings', {action: 'revoke'}) }}" class="d-inline" onsubmit="return confirm('Bu uyarıyı kaldırmak istediğinize emin misiniz?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('warnings_revoke') }}">
+                        <input type="hidden" name="wid" value="{{ w.wid }}">
+                        <input type="hidden" name="uid" value="{{ user.uid }}">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Kaldır</button>
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+    <p class="mt-2"><a href="{{ path('app_member', {action: 'profile', uid: user.uid}) }}">« Profile dön</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,4 @@
+<option value="">-- Arkadaş listesinden seç --</option>
+{% for b in buddies %}
+<option value="{{ b.uid }}">{{ b.username }}</option>
+{% endfor %}

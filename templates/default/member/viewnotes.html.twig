@@ -1,0 +1,32 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Kullanici Notlari — {{ user.username }} — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_member', {action: 'profile', uid: user.uid}) }}">{{ user.username }}</a> &raquo;
+        Kullanici Notlari
+    </div>
+</div>
+
+<table class="tborder" style="width: 100%;">
+    <thead>
+        <tr>
+            <td class="thead"><strong>{{ user.username }} — Kullanici Notlari</strong></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="trow1">
+                {% if usernotes %}
+                    {{ usernotes|nl2br }}
+                {% else %}
+                    <em>Bu kullaniciya ait not bulunmuyor.</em>
+                {% endif %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

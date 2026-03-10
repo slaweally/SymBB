@@ -1,0 +1,45 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Avatar Yukle — Kontrol Paneli — SymBB{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="cp-container">
+        <div class="cp-menu">
+            <h3>Profil</h3>
+            <ul>
+                <li><a href="{{ path('app_usercp') }}">Genel Bakis</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'profile'}) }}">Profil Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'editsig'}) }}">Imza Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'options'}) }}">Secenekleri Duzenle</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'subscriptions'}) }}">Konu Abonelikleri</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'drafts'}) }}">Taslaklar</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'password'}) }}">Sifre Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'email'}) }}">E-posta Degistir</a></li>
+                <li><a href="{{ path('app_usercp', {action: 'avatar'}) }}" class="active">Avatar Yukle</a></li>
+            </ul>
+        </div>
+        <div class="cp-content">
+            <h1>Avatar Yukle</h1>
+            {% if error %}
+                <div class="alert-error">{{ error }}</div>
+            {% endif %}
+            <div>
+                {% if user.avatar %}
+                    <img src="{{ user.avatar starts with 'http' ? user.avatar : asset(user.avatar) }}" alt="Avatar" class="avatar-preview">
+                {% else %}
+                    <div class="avatar-placeholder">{{ user.username|slice(0, 1)|upper }}</div>
+                {% endif %}
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="avatar">Resim Sec (JPG, PNG, GIF, WebP - max 2MB)</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/gif,image/webp" required>
+                    <p class="avatar-hint">Maksimum dosya boyutu: 2MB</p>
+                </div>
+                <button type="submit" class="btn-primary">Avatar Yukle</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'default/base.html.twig' %}
+
+{% block title %}Not Defteri — SymBB{% endblock %}
+
+{% block body %}
+<div class="max-w-900">
+    <div class="breadcrumb">
+        <a href="{{ path('app_board_index') }}">Ana Sayfa</a> &raquo;
+        <a href="{{ path('app_usercp') }}">Kontrol Paneli</a> &raquo;
+        Not Defteri
+    </div>
+
+    <table class="tborder" style="width: 100%;">
+        <thead>
+            <tr>
+                <td class="thead"><strong>Özel Not Defteri</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="trow1">
+                    <form method="post" action="{{ path('app_usercp', {action: 'do_notepad'}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('notepad') }}">
+                        <textarea name="notepad" class="form-control" rows="15" maxlength="60000" placeholder="Kisisel notlarinizi buraya yazin...">{{ user.notepad ?? '' }}</textarea>
+                        <p class="small text-muted mt-1">En fazla 60.000 karakter.</p>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <a href="{{ path('app_usercp') }}" class="btn btn-outline-secondary">Iptal</a>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
