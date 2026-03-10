@@ -11,4 +11,7 @@ Note: The theme is a rough draft and has been simply prepared to show that the c
 
 MyBB has not yet been fully migrated to the Symfony structure. Development on the admin panel side has not yet been completed, and usage is still done with the default admin panel, but of course, that will be done in the future.
 
-Translated with DeepL.com (free version)
+Download the installation packages and import the symbb.sql file into your database. 
+Username: Admin
+Password: 125478.
+Everything else is as you know in Mybb.
